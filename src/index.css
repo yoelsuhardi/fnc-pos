@@ -1,0 +1,480 @@
+:root {
+  /* Ergonomic High-Contrast Dark Theme for POS */
+  --bg-color: #121212;
+  --panel-bg: #1e1e1e;
+  --panel-border: #333333;
+  --text-main: #f5f5f5;
+  --text-muted: #aaaaaa;
+
+  --color-specials: #d32f2f;
+  --color-fish: #1976d2;
+  --color-chips: #f57c00;
+  --color-sides: #388e3c;
+  --color-action: #0288d1;
+  --color-success: #4caf50;
+  --color-danger: #f44336;
+
+  --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+
+/* Custom Scrollbar for Windows Touch Screen visibility */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border-radius: 10px;
+  border: 3px solid var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-action);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-base);
+  background: var(--bg-color);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  /* Prevent text selection in POS */
+}
+
+/* App Layout */
+.pos-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+}
+
+/* Top Header */
+.pos-header {
+  height: 60px;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.pos-header .brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: 1px;
+}
+
+.pos-header .clock {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Main Workspace layout */
+.pos-workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left side: Menu Categories and Items */
+.menu-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--panel-border);
+}
+
+.category-bar {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(27, 38, 59, 0.5);
+  overflow-x: auto;
+}
+
+.category-btn {
+  padding: 24px 32px;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  background: var(--panel-bg);
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.category-btn.active {
+  border-color: var(--text-main);
+  background: var(--color-action);
+}
+
+.menu-grid {
+  flex: 1;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.menu-item-btn {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  min-height: 120px;
+  touch-action: manipulation;
+}
+
+.menu-item-btn:active {
+  transform: scale(0.97);
+}
+
+.menu-item-btn .name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.menu-item-btn .price {
+  font-size: 1.2rem;
+  color: #a3b18a;
+  font-weight: 600;
+}
+
+/* Right side: Cart */
+.cart-area {
+  width: 400px;
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-header h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.cart-type-selector {
+  display: flex;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cart-type-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cart-type-btn.active {
+  background: var(--color-action);
+  color: var(--text-main);
+}
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(65, 90, 119, 0.4);
+}
+
+.cart-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cart-item-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.cart-item-meta {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.cart-item-price {
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cart-item-remove {
+  background: var(--panel-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  border-radius: 8px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-footer {
+  border-top: 1px solid var(--panel-border);
+  padding: 20px;
+  background: rgba(13, 27, 42, 0.5);
+}
+
+.cart-totals {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.pay-btn {
+  width: 100%;
+  padding: 20px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-success);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.1s, opacity 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.pay-btn:active {
+  transform: translateY(2px);
+}
+
+.pay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.modifier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.mod-btn {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--panel-border);
+  background: transparent;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  touch-action: manipulation;
+}
+
+.mod-btn * {
+  pointer-events: none;
+}
+
+.mod-btn.active {
+  border-color: var(--color-action);
+  background: rgba(33, 158, 188, 0.1);
+}
+
+.mod-btn .mod-price {
+  font-size: 1rem;
+  color: #a3b18a;
+  font-weight: 400;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+  background: transparent;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-action);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Print Styles (Kitchen Docket) */
+@media print {
+  @page {
+    margin: 0;
+    size: 80mm auto;
+    /* Thermal printer standard width */
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .kitchen-docket,
+  .kitchen-docket * {
+    visibility: visible;
+  }
+
+  .kitchen-docket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 76mm;
+    /* 80mm roll minus 4mm padding to prevent cutoff */
+    padding: 2mm;
+    margin: 0;
+    background: white;
+    color: black;
+    font-family: monospace;
+    font-size: 14pt;
+    /* Optimized for ~32 char width fit on 80mm */
+  }
+
+  .docket-header {
+    text-align: center;
+    border-bottom: 2px dashed black;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+
+  .docket-title {
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+  }
+
+  .docket-meta {
+    font-size: 12pt;
+    margin-bottom: 4px;
+  }
+
+  .docket-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+  }
+
+  .docket-item-qty {
+    font-size: 20pt;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .docket-item-name {
+    font-size: 20pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .docket-item-mod {
+    font-size: 16pt;
+    margin-left: 30px;
+    margin-top: 5px;
+  }
+}
