@@ -3,15 +3,15 @@ name: Build and Release Windows EXE
 on:
   push:
     tags:
-      - 'v*' # Trigger on version tags like v1.0.0
-  workflow_dispatch: # Manual trigger from GitHub Actions tab
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-and-release:
     runs-on: windows-latest
 
     permissions:
-      contents: write # Required to create GitHub Releases
+      contents: write
 
     steps:
       - name: Checkout code
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -29,17 +29,26 @@ jobs:
       - name: Build web assets (Vite)
         run: npm run build
 
+      - name: Verify dist output
+        run: |
+          echo "Listing dist/ contents:"
+          dir dist
+          echo "electron-builder version:"
+          npx electron-builder --version
+
       - name: Build & Publish EXE to GitHub Release
         run: npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: electron-builder
 
       - name: Upload installer as artifact (backup)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: FNC-POS-Release-${{ github.ref_name }}
           path: |
             dist_electron/*.exe
             dist_electron/*.msi
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 90

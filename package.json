@@ -28,8 +28,7 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "installerFilename": "FNC-POS-Setup-${version}.exe"
+      "allowToChangeInstallationDirectory": true
     },
     "files": [
       "dist/**/*",

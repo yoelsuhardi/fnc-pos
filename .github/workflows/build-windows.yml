@@ -3,7 +3,7 @@ name: Build Windows EXE
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Manual trigger from GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -25,10 +25,20 @@ jobs:
       - name: Build web assets (Vite)
         run: npm run build
 
+      - name: Verify dist output
+        run: |
+          echo "Listing dist/ contents:"
+          dir dist
+          echo "Node version:"
+          node --version
+          echo "electron-builder version:"
+          npx electron-builder --version
+
       - name: Build Windows EXE (Electron Builder)
         run: npx electron-builder --win --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: electron-builder
 
       - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
