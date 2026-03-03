@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ openPhoneQueue, openTransactions, openDailyClose, openSettings }) {
+export default function Header({ openPhoneQueue, openTransactions, openDailyClose, openSettings, onZoomIn, onZoomOut, onZoomReset, zoomLevel }) {
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -19,6 +19,15 @@ export default function Header({ openPhoneQueue, openTransactions, openDailyClos
                 >
                     ⚙️
                 </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', background: 'var(--panel-border)', padding: '4px 12px', borderRadius: '8px' }}>
+                    <button onClick={onZoomOut} title="Zoom out (Ctrl+-)" style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px' }}>🔍-</button>
+                    <span
+                        onClick={onZoomReset}
+                        title="Reset zoom (Ctrl+0)"
+                        style={{ fontWeight: 'bold', cursor: 'pointer', userSelect: 'none', minWidth: '44px', textAlign: 'center' }}
+                    >{Math.round((zoomLevel || 1) * 100)}%</span>
+                    <button onClick={onZoomIn} title="Zoom in (Ctrl+=)" style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px' }}>🔍+</button>
+                </div>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button

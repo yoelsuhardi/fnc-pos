@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from './components/Header';
 import MenuGrid from './components/MenuGrid';
 import Cart from './components/Cart';
@@ -11,6 +11,7 @@ import SettingsModal from './components/SettingsModal';
 import SeasoningModal from './components/SeasoningModal';
 import CustomerInvoice from './components/CustomerInvoice';
 import DailyCloseModal from './components/DailyCloseModal';
+import OrderTypePrompt from './components/OrderTypePrompt';
 import { usePos } from './context/PosContext';
 
 function App() {
@@ -24,6 +25,52 @@ function App() {
   const [showEftpos, setShowEftpos] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceOrder, setInvoiceOrder] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showZoomToast, setShowZoomToast] = useState(false);
+  const zoomToastTimer = useRef(null);
+
+  const clampZoom = (val) => Math.round(Math.min(Math.max(val, 0.5), 2.0) * 10) / 10;
+
+  const applyZoom = useCallback((newZoom) => {
+    setZoomLevel(clampZoom(newZoom));
+    setShowZoomToast(true);
+    if (zoomToastTimer.current) clearTimeout(zoomToastTimer.current);
+    zoomToastTimer.current = setTimeout(() => setShowZoomToast(false), 1500);
+  }, []);
+
+  // Chrome-style keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      if (e.key === '=' || e.key === '+') {
+        e.preventDefault();
+        setZoomLevel(prev => { const next = clampZoom(prev + 0.1); applyZoom(next); return next; });
+      } else if (e.key === '-') {
+        e.preventDefault();
+        setZoomLevel(prev => { const next = clampZoom(prev - 0.1); applyZoom(next); return next; });
+      } else if (e.key === '0') {
+        e.preventDefault();
+        applyZoom(1.0);
+      }
+    };
+    // Chrome-style Ctrl+scroll zoom
+    const handleWheel = (e) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      setZoomLevel(prev => {
+        const delta = e.deltaY < 0 ? 0.1 : -0.1;
+        const next = clampZoom(prev + delta);
+        applyZoom(next);
+        return next;
+      });
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [applyZoom]);
 
   // Seasoning pre-checkout flow
   const [showSeasoningModal, setShowSeasoningModal] = useState(false);
@@ -86,8 +133,12 @@ function App() {
 
   return (
     <>
-      <div className="pos-container">
+      <div className="pos-container" style={{ zoom: zoomLevel }}>
         <Header
+          zoomLevel={zoomLevel}
+          onZoomIn={() => applyZoom(zoomLevel + 0.1)}
+          onZoomOut={() => applyZoom(zoomLevel - 0.1)}
+          onZoomReset={() => applyZoom(1.0)}
           openPhoneQueue={() => setShowQueueModal(true)}
           openTransactions={() => setShowTransactionsModal(true)}
           openDailyClose={() => setShowDailyClose(true)}
@@ -103,6 +154,21 @@ function App() {
           />
         </main>
       </div>
+
+      {/* Chrome-style zoom toast */}
+      {showZoomToast && (
+        <div style={{
+          position: 'fixed', bottom: '24px', right: '24px',
+          background: 'rgba(30,30,30,0.92)', color: '#fff',
+          padding: '8px 18px', borderRadius: '8px',
+          fontSize: '1rem', fontWeight: 'bold',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+          zIndex: 99999, pointerEvents: 'none',
+          animation: 'fadeInZoom 0.15s ease',
+        }}>
+          🔍 {Math.round(zoomLevel * 100)}%
+        </div>
+      )}
 
       {/* Hidden print specifically styled for thermal ticket */}
       <KitchenDocket />
@@ -162,6 +228,8 @@ function App() {
           onCancel={() => setShowEftpos(false)}
         />
       )}
+
+      <OrderTypePrompt />
     </>
   );
 }
