@@ -24,8 +24,12 @@
       "hardenedRuntime": false
     },
     "win": {
-      "target": "nsis",
-      "icon": "public/icon.ico"
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerFilename": "FNC-POS-Setup-${version}.exe"
     },
     "files": [
       "dist/**/*",

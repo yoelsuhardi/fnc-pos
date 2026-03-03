@@ -3,7 +3,7 @@ name: Build Windows EXE
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # Allows manual trigger from GitHub website
+  workflow_dispatch: # Manual trigger from GitHub Actions tab
 
 jobs:
   build-windows:
@@ -22,14 +22,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Windows EXE
-        run: npm run electron:build
+      - name: Build web assets (Vite)
+        run: npm run build
+
+      - name: Build Windows EXE (Electron Builder)
+        run: npx electron-builder --win --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload installer as artifact
+      - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
         with:
           name: FNC-POS-Windows-Installer
-          path: dist_electron/*.exe
+          path: |
+            dist_electron/*.exe
+            dist_electron/*.msi
+          if-no-files-found: error
           retention-days: 30

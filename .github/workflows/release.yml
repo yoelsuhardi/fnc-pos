@@ -3,32 +3,43 @@ name: Build and Release Windows EXE
 on:
   push:
     tags:
-      - 'v*' # Trigger build when a version tag like v1.0 is pushed
-  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+      - 'v*' # Trigger on version tags like v1.0.0
+  workflow_dispatch: # Manual trigger from GitHub Actions tab
 
 jobs:
   build-and-release:
     runs-on: windows-latest
-    
+
     permissions:
-      contents: write # Needed to create releases
+      contents: write # Required to create GitHub Releases
 
     steps:
-      - name: Check out Git repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build Web Assets (Vite)
+      - name: Build web assets (Vite)
         run: npm run build
 
-      - name: Build & Publish EXE via Electron Builder
+      - name: Build & Publish EXE to GitHub Release
         run: npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer as artifact (backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FNC-POS-Release-${{ github.ref_name }}
+          path: |
+            dist_electron/*.exe
+            dist_electron/*.msi
+          if-no-files-found: error
+          retention-days: 90
