@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePos } from '../context/PosContext';
 
-export default function Cart({ onPayEftpos, onSavePhoneOrder }) {
+export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) {
     const { cart, removeFromCart, cartTotal, orderType, setOrderType } = usePos();
 
     return (
@@ -54,6 +54,27 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder }) {
                     <span>${cartTotal.toFixed(2)}</span>
                 </div>
 
+                {/* Print Invoice button */}
+                <button
+                    onClick={onPrintInvoice}
+                    disabled={cart.length === 0}
+                    style={{
+                        width: '100%',
+                        padding: '10px',
+                        marginBottom: '10px',
+                        background: 'transparent',
+                        color: cart.length === 0 ? 'var(--text-muted)' : 'var(--text-main)',
+                        border: `1px solid ${cart.length === 0 ? '#444' : 'var(--panel-border)'}`,
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        fontSize: '0.95rem',
+                        cursor: cart.length === 0 ? 'not-allowed' : 'pointer',
+                        letterSpacing: '0.5px'
+                    }}
+                >
+                    🧾 Print Customer Invoice
+                </button>
+
                 {orderType === 'walk-in' ? (
                     <div style={{ display: 'flex', gap: '12px' }}>
                         <button
@@ -87,3 +108,4 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder }) {
         </div>
     );
 }
+

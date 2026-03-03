@@ -404,77 +404,95 @@ body {
   cursor: pointer;
 }
 
-/* Print Styles (Kitchen Docket) */
+/* Print Styles */
 @media print {
   @page {
     margin: 0;
     size: 80mm auto;
-    /* Thermal printer standard width */
   }
 
-  body * {
+  /* ── Default mode: Kitchen Docket ─────────────────── */
+  body:not(.printing-invoice) * {
     visibility: hidden;
   }
 
-  .kitchen-docket,
-  .kitchen-docket * {
+  body:not(.printing-invoice) .kitchen-docket,
+  body:not(.printing-invoice) .kitchen-docket * {
     visibility: visible;
   }
 
-  .kitchen-docket {
+  body:not(.printing-invoice) .kitchen-docket {
     position: absolute;
     left: 0;
     top: 0;
     width: 76mm;
-    /* 80mm roll minus 4mm padding to prevent cutoff */
     padding: 2mm;
     margin: 0;
     background: white;
     color: black;
     font-family: monospace;
     font-size: 14pt;
-    /* Optimized for ~32 char width fit on 80mm */
   }
 
-  .docket-header {
+  body:not(.printing-invoice) .docket-header {
     text-align: center;
     border-bottom: 2px dashed black;
     padding-bottom: 8px;
     margin-bottom: 12px;
   }
 
-  .docket-title {
+  body:not(.printing-invoice) .docket-title {
     font-size: 18pt;
     font-weight: bold;
     margin: 0 0 8px 0;
   }
 
-  .docket-meta {
+  body:not(.printing-invoice) .docket-meta {
     font-size: 12pt;
     margin-bottom: 4px;
   }
 
-  .docket-item {
+  body:not(.printing-invoice) .docket-item {
     margin-bottom: 15px;
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
   }
 
-  .docket-item-qty {
-    font-size: 20pt;
-    font-weight: bold;
-    margin-right: 10px;
-  }
-
-  .docket-item-name {
+  body:not(.printing-invoice) .docket-item-name {
     font-size: 20pt;
     font-weight: bold;
     text-transform: uppercase;
   }
 
-  .docket-item-mod {
+  body:not(.printing-invoice) .docket-item-mod {
     font-size: 16pt;
     margin-left: 30px;
     margin-top: 5px;
+  }
+
+  /* ── Customer Invoice mode (body.printing-invoice) ── */
+  body.printing-invoice * {
+    visibility: hidden;
+  }
+
+  body.printing-invoice #customer-invoice-content,
+  body.printing-invoice #customer-invoice-content * {
+    visibility: visible;
+  }
+
+  body.printing-invoice #customer-invoice-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 76mm;
+    padding: 2mm;
+    background: white;
+    color: black;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11pt;
+  }
+
+  body.printing-invoice .no-print {
+    display: none !important;
   }
 }

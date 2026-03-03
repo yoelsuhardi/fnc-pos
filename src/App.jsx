@@ -9,23 +9,39 @@ import KitchenDocket from './components/KitchenDocket';
 import TransactionsModal from './components/TransactionsModal';
 import SettingsModal from './components/SettingsModal';
 import SeasoningModal from './components/SeasoningModal';
+import CustomerInvoice from './components/CustomerInvoice';
 import { usePos } from './context/PosContext';
 
 function App() {
-  const { cartTotal, processWalkInPayment, savePhoneOrder } = usePos();
+  const { cart, cartTotal, processWalkInPayment, savePhoneOrder } = usePos();
 
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showQueueModal, setShowQueueModal] = useState(false);
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showEftpos, setShowEftpos] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [invoiceOrder, setInvoiceOrder] = useState(null);
 
   // Seasoning pre-checkout flow
   const [showSeasoningModal, setShowSeasoningModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null); // 'cash' | 'eftpos' | 'phone'
+  const [pendingAction, setPendingAction] = useState(null);
   const [selectedSeasoning, setSelectedSeasoning] = useState(null);
 
-  // Called when CASH/EFTPOS/Phone buttons clicked — show seasoning first
+  // Print customer invoice from current cart
+  const handlePrintInvoice = () => {
+    const previewOrder = {
+      id: 'INVOICE',
+      customerName: null,
+      items: [...cart],
+      total: cartTotal,
+      time: new Date().toISOString(),
+      seasoning: null
+    };
+    setInvoiceOrder(previewOrder);
+    setShowInvoice(true);
+  };
+
   const handlePayEftpos = (method) => {
     setPendingAction(method);
     setShowSeasoningModal(true);
@@ -36,7 +52,6 @@ function App() {
     setShowSeasoningModal(true);
   };
 
-  // After seasoning is chosen, continue with the original action
   const handleSeasoningSelect = (seasoning) => {
     setSelectedSeasoning(seasoning);
     setShowSeasoningModal(false);
@@ -56,13 +71,11 @@ function App() {
     setPendingAction(null);
   };
 
-  // Eftpos modal callbacks
   const handleWalkInEftposSuccess = () => {
     setShowEftpos(false);
     processWalkInPayment(selectedSeasoning);
   };
 
-  // Phone modal callback
   const handlePhoneOrderSave = (name) => {
     setShowPhoneModal(false);
     savePhoneOrder(name, selectedSeasoning);
@@ -83,12 +96,21 @@ function App() {
           <Cart
             onPayEftpos={handlePayEftpos}
             onSavePhoneOrder={handleSavePhoneOrderClick}
+            onPrintInvoice={handlePrintInvoice}
           />
         </main>
       </div>
 
       {/* Hidden print specifically styled for thermal ticket */}
       <KitchenDocket />
+
+      {/* Customer Invoice Modal */}
+      {showInvoice && invoiceOrder && (
+        <CustomerInvoice
+          order={invoiceOrder}
+          onClose={() => setShowInvoice(false)}
+        />
+      )}
 
       {/* Seasoning Pre-Checkout Modal */}
       {showSeasoningModal && (
@@ -98,7 +120,6 @@ function App() {
         />
       )}
 
-      {/* Modals */}
       {showPhoneModal && (
         <PhoneOrderModal
           onSave={handlePhoneOrderSave}

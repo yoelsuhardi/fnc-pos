@@ -1,14 +1,28 @@
 import React, { useEffect } from 'react';
 import { usePos } from '../context/PosContext';
 
+// Detect if running inside Electron
+const isElectron = typeof window !== 'undefined' && window.process?.type === 'renderer';
+
+const triggerPrint = () => {
+    if (isElectron) {
+        // Silent print via Electron IPC — no dialog
+        const { ipcRenderer } = window.require('electron');
+        ipcRenderer.send('silent-print');
+    } else {
+        // Fallback for browser dev mode
+        window.print();
+    }
+};
+
 export default function KitchenDocket() {
     const { latestPrintedOrder } = usePos();
 
     useEffect(() => {
         if (latestPrintedOrder) {
-            // Guarantee DOM repaint before print dialog blocking
+            // Allow DOM to repaint before printing
             const timer = setTimeout(() => {
-                window.print();
+                triggerPrint();
             }, 250);
             return () => clearTimeout(timer);
         }
@@ -27,6 +41,15 @@ export default function KitchenDocket() {
         if (name === 'chicken salt & vinegar' || name === 'chicken salt vinegar') return 'CSV';
         if (name === 'salt & vinegar' || name === 'salt vinegar') return 'SV';
         return seasoning.name.toUpperCase();
+    };
+
+    const abbreviatePackageName = (name) => {
+        const n = name.toUpperCase();
+        if (n.includes('HALF FAMILY')) return 'HFS';
+        if (n.includes('FAMILY SPECIAL')) return 'FS';
+        if (n.includes('FISHERMAN')) return 'FISHERMAN';
+        if (n.includes("KID'S BOX") || n.includes('KIDS BOX')) return 'KB';
+        return name.toUpperCase();
     };
 
     const abbreviateName = (name) => {
@@ -73,6 +96,10 @@ export default function KitchenDocket() {
 
     const getSubItems = (item) => {
         let subs = [];
+        const nameUpper = (item.name || '').toUpperCase();
+
+        // Fisherman's Basket — no detail, print as-is
+        if (nameUpper.includes('FISHERMAN')) return [];
 
         // Parse complex modifier (Family Special choices)
         if (item.modifier && item.hasComplexModifiers) {
@@ -148,11 +175,25 @@ export default function KitchenDocket() {
                     const subItems = getSubItems(item);
                     const isComplex = subItems.length > 0;
 
+                    // Fisherman's Basket: print flat, no sub-items
+                    const nameUp = (item.name || '').toUpperCase();
+                    const isFisherman = nameUp.includes('FISHERMAN');
+
+                    if (isFisherman) {
+                        return (
+                            <div key={idx} className="docket-item">
+                                <div style={{ fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
+                                    1x FISHERMAN
+                                </div>
+                            </div>
+                        );
+                    }
+
                     if (isComplex) {
                         return (
                             <div key={idx} className="docket-item">
                                 <div style={{ marginBottom: '8px', fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
-                                    1x {item.name}
+                                    1x {abbreviatePackageName(item.name)}
                                 </div>
                                 <div style={{ paddingLeft: '8px' }}>
                                     {subItems.map((sub, sIdx) => {
@@ -196,6 +237,12 @@ export default function KitchenDocket() {
                     }
                 })}
             </div>
+
+            {/* Total */}
+            <div style={{ borderTop: '2px dashed black', marginTop: '12px', paddingTop: '10px', textAlign: 'right', fontSize: '20pt', fontWeight: 'bold' }}>
+                TOTAL: ${latestPrintedOrder.total?.toFixed(2)}
+            </div>
         </div>
     );
 }
+

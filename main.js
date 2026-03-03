@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -29,6 +29,29 @@ function createWindow() {
         mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
     }
 }
+
+// ─── Silent Print IPC handler ─────────────────────────────────────────────────
+// Called from KitchenDocket.jsx via ipcRenderer.send('silent-print')
+ipcMain.on('silent-print', (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+
+    win.webContents.print(
+        {
+            silent: true,          // No print dialog
+            printBackground: true, // Print background colors/styles
+            deviceName: '',        // '' = use system default printer
+        },
+        (success, errorType) => {
+            if (!success) {
+                console.error('[Silent Print] Failed:', errorType);
+            } else {
+                console.log('[Silent Print] Sent to printer successfully.');
+            }
+        }
+    );
+});
+// ─────────────────────────────────────────────────────────────────────────────
 
 app.whenReady().then(() => {
     createWindow();
