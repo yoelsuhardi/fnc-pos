@@ -1,0 +1,34 @@
+name: Build and Release Windows EXE
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger build when a version tag like v1.0 is pushed
+  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    
+    permissions:
+      contents: write # Needed to create releases
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Web Assets (Vite)
+        run: npm run build
+
+      - name: Build & Publish EXE via Electron Builder
+        run: npx electron-builder --win --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
