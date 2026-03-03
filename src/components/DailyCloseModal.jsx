@@ -54,11 +54,11 @@ export default function DailyCloseModal({ onClose }) {
                         <div style={{ marginBottom: '20px' }}>
                             <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payment Method</div>
                             <div style={{ display: 'flex', gap: '10px' }}>
-                                <div style={{ flex: 1, background: 'var(--panel-bg)', borderRadius: '8px', padding: '10px 14px', border: '1px solid #444' }}>
+                                <div style={{ flex: 1, background: 'var(--bg-color)', borderRadius: '8px', padding: '10px 14px', border: '1px solid var(--panel-border)' }}>
                                     <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>${dailyStats.cashTotal.toFixed(2)}</div>
                                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>💵 Cash</div>
                                 </div>
-                                <div style={{ flex: 1, background: 'var(--panel-bg)', borderRadius: '8px', padding: '10px 14px', border: '1px solid #444' }}>
+                                <div style={{ flex: 1, background: 'var(--bg-color)', borderRadius: '8px', padding: '10px 14px', border: '1px solid var(--panel-border)' }}>
                                     <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>${dailyStats.eftposTotal.toFixed(2)}</div>
                                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>💳 EFTPOS</div>
                                 </div>
@@ -70,7 +70,7 @@ export default function DailyCloseModal({ onClose }) {
                             <div style={{ marginBottom: '20px' }}>
                                 <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Top Items</div>
                                 {dailyStats.topItems.map(({ name, qty }, i) => (
-                                    <div key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid #2a2a2a', fontSize: '0.9rem' }}>
+                                    <div key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid var(--panel-border)', fontSize: '0.9rem' }}>
                                         <span>{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '  '} {name}</span>
                                         <span style={{ color: 'var(--text-muted)' }}>×{qty}</span>
                                     </div>

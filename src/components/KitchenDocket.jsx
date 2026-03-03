@@ -252,6 +252,19 @@ export default function KitchenDocket() {
             <div style={{ borderTop: '2px dashed black', marginTop: '12px', paddingTop: '10px', textAlign: 'right', fontSize: '20pt', fontWeight: 'bold' }}>
                 TOTAL: ${latestPrintedOrder.total?.toFixed(2)}
             </div>
+
+            {/* Tear-off Queue Ticket */}
+            <div style={{ marginTop: '40px', borderTop: '2px dashed black', paddingTop: '20px', textAlign: 'center' }}>
+                <div style={{ fontSize: '14pt', marginBottom: '5px' }}>✂️------------------</div>
+                <div style={{ fontSize: '16pt', fontWeight: 'bold' }}>CUSTOMER TICKET</div>
+                <div style={{ fontSize: '14pt', marginBottom: '10px', marginTop: '4px' }}>
+                    {latestPrintedOrder.customerName === 'Walk-in' ? 'Walk-in' : latestPrintedOrder.customerName}
+                </div>
+                <div style={{ fontSize: '60pt', fontWeight: '900', lineHeight: '1', margin: '15px 0' }}>
+                    {latestPrintedOrder.id}
+                </div>
+                <div style={{ fontSize: '12pt', fontStyle: 'italic' }}>Please wait for your number</div>
+            </div>
         </div>
     );
 }

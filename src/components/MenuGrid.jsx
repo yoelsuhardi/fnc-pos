@@ -9,13 +9,18 @@ export default function MenuGrid() {
     const [selectedFish, setSelectedFish] = useState(null);
     const [selectedSpecial, setSelectedSpecial] = useState(null);
 
-    const { addToCart, orderFrequencies } = usePos();
+    const { addToCart, orderFrequencies, isHolidaySurcharge } = usePos();
+    const priceMultiplier = isHolidaySurcharge ? 1.1 : 1;
 
     const proceedToCart = (item, modifierOrModifiers) => {
+        const adjustPrice = (obj) => obj ? { ...obj, price: parseFloat((obj.price * priceMultiplier).toFixed(2)) } : null;
+        const adjustedItem = adjustPrice(item);
+
         if (Array.isArray(modifierOrModifiers)) {
-            modifierOrModifiers.forEach(mod => addToCart(item, mod));
+            const adjustedMods = modifierOrModifiers.map(adjustPrice);
+            adjustedMods.forEach(mod => addToCart(adjustedItem, mod));
         } else {
-            addToCart(item, modifierOrModifiers);
+            addToCart(adjustedItem, adjustPrice(modifierOrModifiers));
         }
     };
 
@@ -66,14 +71,20 @@ export default function MenuGrid() {
                         onClick={() => setActiveCategory(cat.id)}
                         style={{
                             backgroundColor: activeCategory === cat.id ? cat.color : '',
-                            borderColor: activeCategory === cat.id ? 'white' : 'transparent',
-                            color: 'white'
+                            borderColor: activeCategory === cat.id ? 'transparent' : 'transparent',
+                            color: activeCategory === cat.id ? 'white' : 'var(--text-main)'
                         }}
                     >
                         {cat.name}
                     </button>
                 ))}
             </div>
+
+            {isHolidaySurcharge && (
+                <div style={{ background: '#f44336', color: 'white', padding: '6px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem', letterSpacing: '1px' }}>
+                    ⚠️ PUBLIC HOLIDAY SURCHARGE ACTIVE (+10%)
+                </div>
+            )}
 
             <div className="menu-grid">
                 {visibleItems.map(item => (
@@ -119,11 +130,11 @@ export default function MenuGrid() {
                                 {item.name}
                             </div>
                             <div className="price" style={{
-                                color: '#a3b18a',
+                                color: 'var(--color-sides)',
                                 fontWeight: 'bold',
                                 fontSize: item.image ? '18px' : '22px'
                             }}>
-                                ${item.price.toFixed(2)}
+                                ${(item.price * priceMultiplier).toFixed(2)}
                             </div>
 
                             {/* Subtitle Hints based on complexity */}
@@ -143,17 +154,19 @@ export default function MenuGrid() {
 
             {selectedFish && (
                 <ModifierModal
-                    item={selectedFish}
+                    item={{ ...selectedFish, price: parseFloat((selectedFish.price * priceMultiplier).toFixed(2)) }}
                     onSelect={handleModifierSelect}
                     onClose={() => setSelectedFish(null)}
+                    priceMultiplier={priceMultiplier}
                 />
             )}
 
             {selectedSpecial && (
                 <ComplexModifierModal
-                    item={selectedSpecial}
+                    item={{ ...selectedSpecial, price: parseFloat((selectedSpecial.price * priceMultiplier).toFixed(2)) }}
                     onSave={handleComplexModifierSelect}
                     onClose={() => setSelectedSpecial(null)}
+                    priceMultiplier={priceMultiplier}
                 />
             )}
 

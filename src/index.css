@@ -1,26 +1,37 @@
 :root {
-  /* Ergonomic High-Contrast Dark Theme for POS */
-  --bg-color: #121212;
-  --panel-bg: #1e1e1e;
-  --panel-border: #333333;
-  --text-main: #f5f5f5;
-  --text-muted: #aaaaaa;
+  /* Ergonomic High-Contrast Light Theme for POS */
+  --bg-color: #f1f5f9;
+  /* slate-100 */
+  --panel-bg: #ffffff;
+  --panel-border: #cbd5e1;
+  /* slate-300 */
+  --text-main: #0f172a;
+  /* slate-900 (almost black) */
+  --text-muted: #475569;
+  /* slate-600 (dark enough to read easily) */
 
-  --color-specials: #d32f2f;
-  --color-fish: #1976d2;
-  --color-chips: #f57c00;
-  --color-sides: #388e3c;
-  --color-action: #0288d1;
-  --color-success: #4caf50;
-  --color-danger: #f44336;
+  --color-specials: #dc2626;
+  /* red-600 */
+  --color-fish: #2563eb;
+  /* blue-600 */
+  --color-chips: #ea580c;
+  /* orange-600 */
+  --color-sides: #16a34a;
+  /* green-600 */
+  --color-action: #2563eb;
+  /* blue-600 */
+  --color-success: #16a34a;
+  /* green-600 */
+  --color-danger: #dc2626;
+  /* red-600 */
 
   --font-base: 'Inter', system-ui, -apple-system, sans-serif;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 /* Custom Scrollbar for Windows Touch Screen visibility */
@@ -34,7 +45,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--panel-border);
+  background: #bdc3c7;
   border-radius: 10px;
   border: 3px solid var(--bg-color);
 }
@@ -110,7 +121,8 @@ body {
   display: flex;
   gap: 16px;
   padding: 20px;
-  background: rgba(27, 38, 59, 0.5);
+  background: #ffffff;
+  border-bottom: 1px solid var(--panel-border);
   overflow-x: auto;
 }
 
@@ -128,8 +140,10 @@ body {
 }
 
 .category-btn.active {
-  border-color: var(--text-main);
+  border-color: var(--color-action);
   background: var(--color-action);
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 .menu-grid {
@@ -159,8 +173,13 @@ body {
   touch-action: manipulation;
 }
 
+.menu-item-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
 .menu-item-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .menu-item-btn .name {
@@ -172,8 +191,8 @@ body {
 
 .menu-item-btn .price {
   font-size: 1.2rem;
-  color: #a3b18a;
-  font-weight: 600;
+  color: var(--color-sides);
+  font-weight: 700;
 }
 
 /* Right side: Cart */
@@ -271,7 +290,7 @@ body {
 .cart-footer {
   border-top: 1px solid var(--panel-border);
   padding: 20px;
-  background: rgba(13, 27, 42, 0.5);
+  background: #fdfdfd;
 }
 
 .cart-totals {
@@ -300,6 +319,11 @@ body {
   gap: 12px;
 }
 
+.pay-btn:hover:not(:disabled) {
+  background: #27ae60;
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
 .pay-btn:active {
   transform: translateY(2px);
 }
@@ -323,12 +347,12 @@ body {
 
 .modal-content {
   background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
+  border: none;
   padding: 32px;
   border-radius: var(--radius-lg);
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .modal-title {
@@ -371,8 +395,8 @@ body {
 
 .mod-btn .mod-price {
   font-size: 1rem;
-  color: #a3b18a;
-  font-weight: 400;
+  color: var(--color-sides);
+  font-weight: 600;
 }
 
 .modal-actions {
@@ -380,16 +404,28 @@ body {
   gap: 16px;
 }
 
-.btn-secondary {
+.btn-secondary,
+.cancel-btn {
   flex: 1;
   padding: 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--panel-border);
-  background: transparent;
+  background: #f1f2f6;
   color: var(--text-main);
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover,
+.cancel-btn:hover {
+  background: #dfe4ea;
+}
+
+.btn-secondary:active,
+.cancel-btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
@@ -400,8 +436,19 @@ body {
   background: var(--color-action);
   color: #fff;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
 }
 
 /* Print Styles */

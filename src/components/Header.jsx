@@ -23,21 +23,21 @@ export default function Header({ openPhoneQueue, openTransactions, openDailyClos
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button
                     className="cart-type-btn"
-                    style={{ background: '#3a3a5c', color: 'white', padding: '8px 14px', borderRadius: '8px' }}
+                    style={{ background: 'var(--panel-border)', color: 'var(--text-main)', padding: '8px 14px', borderRadius: '8px', border: '1px solid #ccc' }}
                     onClick={openDailyClose}
                 >
                     📊 Daily Close
                 </button>
                 <button
                     className="cart-type-btn"
-                    style={{ background: '#a3b18a', color: '#000', padding: '8px 14px', borderRadius: '8px' }}
+                    style={{ background: 'var(--color-sides)', color: 'white', padding: '8px 14px', borderRadius: '8px', border: 'none' }}
                     onClick={openTransactions}
                 >
                     🧾 Transactions
                 </button>
                 <button
                     className="cart-type-btn"
-                    style={{ background: 'var(--color-specials)', color: 'white', padding: '8px 14px', borderRadius: '8px' }}
+                    style={{ background: 'var(--color-specials)', color: 'white', padding: '8px 14px', borderRadius: '8px', border: 'none' }}
                     onClick={openPhoneQueue}
                 >
                     💳 Phone Orders

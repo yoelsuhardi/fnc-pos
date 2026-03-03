@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { fishModifiers } from '../data/menu';
 
-export default function ModifierModal({ item, onSelect, onClose }) {
+export default function ModifierModal({ item, onSelect, onClose, priceMultiplier = 1 }) {
     const [quantity, setQuantity] = useState(1);
     // Track selected modifiers for each fish: null = Battered (default)
     const [selections, setSelections] = useState([null]);
@@ -91,7 +91,7 @@ export default function ModifierModal({ item, onSelect, onClose }) {
                                         }}
                                         onClick={() => handleSelectionChange(idx, mod)}
                                     >
-                                        {mod.name} (+${mod.price.toFixed(2)})
+                                        {mod.name} (+${(mod.price * priceMultiplier).toFixed(2)})
                                     </button>
                                 ))}
                             </div>

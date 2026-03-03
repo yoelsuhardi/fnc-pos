@@ -68,7 +68,7 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                         width: '100%', boxSizing: 'border-box',
                         padding: '8px 10px', marginBottom: '10px',
                         background: 'var(--panel-bg)', color: 'var(--text-main)',
-                        border: orderNote ? '1px solid var(--color-action)' : '1px solid #444',
+                        border: orderNote ? '1px solid var(--color-action)' : '1px solid #ccc',
                         borderRadius: '8px', fontSize: '0.85rem', resize: 'none',
                         height: '52px', fontFamily: 'inherit',
                     }}
@@ -99,7 +99,7 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                         <select
                             value={discountType}
                             onChange={e => setDiscountType(e.target.value)}
-                            style={{ padding: '8px', borderRadius: '6px', background: 'var(--panel-bg)', color: 'var(--text-main)', border: '1px solid #444', fontSize: '0.9rem' }}
+                            style={{ padding: '8px', borderRadius: '6px', background: 'var(--bg-color)', color: 'var(--text-main)', border: '1px solid #ccc', fontSize: '0.9rem' }}
                         >
                             <option value="amount">$ Amount</option>
                             <option value="percent">% Percent</option>
@@ -111,10 +111,10 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                             onKeyDown={e => e.key === 'Enter' && applyDiscount()}
                             placeholder={discountType === 'percent' ? 'e.g. 10' : 'e.g. 5.00'}
                             autoFocus
-                            style={{ flex: 1, padding: '8px', borderRadius: '6px', background: 'var(--panel-bg)', color: 'var(--text-main)', border: '1px solid var(--color-action)', fontSize: '0.9rem' }}
+                            style={{ flex: 1, padding: '8px', borderRadius: '6px', background: 'var(--bg-color)', color: 'var(--text-main)', border: '1px solid var(--color-action)', fontSize: '0.9rem' }}
                         />
                         <button onClick={applyDiscount} style={{ padding: '8px 12px', borderRadius: '6px', background: 'var(--color-action)', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>✓</button>
-                        <button onClick={() => setShowDiscount(false)} style={{ padding: '8px 10px', borderRadius: '6px', background: '#444', color: '#fff', border: 'none', cursor: 'pointer' }}>✕</button>
+                        <button onClick={() => setShowDiscount(false)} style={{ padding: '8px 10px', borderRadius: '6px', background: '#e0e0e0', color: '#333', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
@@ -123,8 +123,8 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                             disabled={cart.length === 0}
                             style={{
                                 flex: 1, padding: '9px', background: 'transparent',
-                                color: cart.length === 0 ? '#555' : 'var(--color-success)',
-                                border: `1px solid ${cart.length === 0 ? '#444' : 'var(--color-success)'}`,
+                                color: cart.length === 0 ? '#aaa' : 'var(--color-success)',
+                                border: `1px solid ${cart.length === 0 ? '#ccc' : 'var(--color-success)'}`,
                                 borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem',
                                 cursor: cart.length === 0 ? 'not-allowed' : 'pointer'
                             }}
@@ -136,8 +136,8 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                             disabled={cart.length === 0}
                             style={{
                                 flex: 1, padding: '9px', background: 'transparent',
-                                color: cart.length === 0 ? '#555' : 'var(--text-main)',
-                                border: `1px solid ${cart.length === 0 ? '#444' : 'var(--panel-border)'}`,
+                                color: cart.length === 0 ? '#aaa' : 'var(--text-main)',
+                                border: `1px solid ${cart.length === 0 ? '#ccc' : 'var(--panel-border)'}`,
                                 borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem',
                                 cursor: cart.length === 0 ? 'not-allowed' : 'pointer'
                             }}
@@ -150,7 +150,7 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                 {/* Payment buttons */}
                 {orderType === 'walk-in' ? (
                     <div style={{ display: 'flex', gap: '12px' }}>
-                        <button className="pay-btn" style={{ flex: 1, background: '#e0a96d', color: '#000' }} disabled={cart.length === 0} onClick={() => onPayEftpos('cash')}>💵 CASH</button>
+                        <button className="pay-btn" style={{ flex: 1, background: '#f1c40f', color: '#000' }} disabled={cart.length === 0} onClick={() => onPayEftpos('cash')}>💵 CASH</button>
                         <button className="pay-btn" style={{ flex: 2 }} disabled={cart.length === 0} onClick={() => onPayEftpos('eftpos')}>💳 EFTPOS</button>
                     </div>
                 ) : (

@@ -3,7 +3,7 @@ import { usePos } from '../context/PosContext';
 import { pairTerminal, generateRegisterId } from '../services/SmartpayService';
 
 export default function SettingsModal({ onClose }) {
-    const { triggerKitchenPrint } = usePos();
+    const { triggerKitchenPrint, isHolidaySurcharge, toggleHolidaySurcharge } = usePos();
 
     // SmartConnect State
     const [pairingCode, setPairingCode] = useState('');
@@ -57,8 +57,8 @@ export default function SettingsModal({ onClose }) {
         width: '100%',
         padding: '10px 12px',
         borderRadius: '6px',
-        border: '1px solid var(--panel-border)',
-        background: 'rgba(255,255,255,0.05)',
+        border: '1px solid #ccc',
+        background: '#fdfdfd',
         color: 'var(--text-main)',
         fontSize: '1rem',
         outline: 'none',
@@ -73,6 +73,31 @@ export default function SettingsModal({ onClose }) {
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                    {/* Public Holiday Surcharge Settings */}
+                    <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
+                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>🎉 Public Holiday Surcharge</span>
+                            <button
+                                onClick={toggleHolidaySurcharge}
+                                style={{
+                                    padding: '6px 16px',
+                                    borderRadius: '20px',
+                                    fontWeight: 'bold',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    background: isHolidaySurcharge ? 'var(--color-success)' : '#bdc3c7',
+                                    color: 'white'
+                                }}
+                            >
+                                {isHolidaySurcharge ? 'ON (+10%)' : 'OFF'}
+                            </button>
+                        </h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>
+                            Automatically increase all menu prices by 10%. Prices in the menu grid will update instantly.
+                        </p>
+                    </div>
 
                     {/* Thermal Printer */}
                     <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
@@ -153,7 +178,7 @@ export default function SettingsModal({ onClose }) {
                         {pairingStatus && (
                             <div style={{
                                 marginTop: '15px', padding: '10px', borderRadius: '4px', fontSize: '0.85rem', textAlign: 'center',
-                                background: pairingStatus.type === 'success' ? 'rgba(76,175,80,0.2)' : pairingStatus.type === 'error' ? 'rgba(244,67,54,0.2)' : 'rgba(255,255,255,0.05)',
+                                background: pairingStatus.type === 'success' ? 'rgba(76,175,80,0.1)' : pairingStatus.type === 'error' ? 'rgba(244,67,54,0.1)' : '#f1f2f6',
                                 color: pairingStatus.type === 'success' ? 'var(--color-success)' : pairingStatus.type === 'error' ? '#f44336' : 'var(--text-main)'
                             }}>
                                 {pairingStatus.msg}

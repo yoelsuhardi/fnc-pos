@@ -11,6 +11,18 @@ export const PosProvider = ({ children }) => {
     const [orderNote, setOrderNote] = useState('');
     const [discount, setDiscount] = useState({ type: 'none', value: 0 }); // type: 'none' | 'amount' | 'percent'
 
+    const [isHolidaySurcharge, setIsHolidaySurcharge] = useState(() => {
+        return localStorage.getItem('fnc_holiday_surcharge') === 'true';
+    });
+
+    const toggleHolidaySurcharge = () => {
+        setIsHolidaySurcharge(prev => {
+            const next = !prev;
+            localStorage.setItem('fnc_holiday_surcharge', next.toString());
+            return next;
+        });
+    };
+
     const [paidOrders, setPaidOrders] = useState(() => {
         try {
             const todayStr = new Date().toDateString();
@@ -46,7 +58,18 @@ export const PosProvider = ({ children }) => {
     });
 
     const getNextOrderId = () => {
-        const nextId = orderCounter;
+        let nextId = orderCounter;
+
+        // Ensure robust day change detection (if they leave the app open overnight)
+        const todayStr = new Date().toDateString();
+        const lastActive = localStorage.getItem('fnc_last_active_date');
+        if (lastActive !== todayStr) {
+            localStorage.setItem('fnc_last_active_date', todayStr);
+            localStorage.removeItem('fnc_paid_orders');
+            setPaidOrders([]); // Reset daily sales view
+            nextId = 1; // Reset queue number
+        }
+
         const newCounter = nextId + 1;
         setOrderCounter(newCounter);
         localStorage.setItem('fnc_order_counter', newCounter.toString());
@@ -249,6 +272,8 @@ export const PosProvider = ({ children }) => {
             discount,
             setDiscount,
             discountAmount,
+            isHolidaySurcharge,
+            toggleHolidaySurcharge,
             phoneOrders,
             savePhoneOrder,
             payPhoneOrder,

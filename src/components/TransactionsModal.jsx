@@ -21,9 +21,9 @@ export default function TransactionsModal({ onClose }) {
                     Today's Transactions
                 </h2>
 
-                <div style={{ background: '#e0a96d', padding: '15px', borderRadius: '8px', margin: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <strong style={{ fontSize: '1.2rem', color: '#000' }}>Daily Total:</strong>
-                    <strong style={{ fontSize: '1.5rem', color: '#000' }}>${dailyTotal.toFixed(2)}</strong>
+                <div style={{ background: '#fef9e7', padding: '15px', borderRadius: '8px', margin: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #f1c40f' }}>
+                    <strong style={{ fontSize: '1.2rem', color: 'var(--text-main)' }}>Daily Total:</strong>
+                    <strong style={{ fontSize: '1.5rem', color: 'var(--text-main)' }}>${dailyTotal.toFixed(2)}</strong>
                 </div>
 
                 <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px', paddingRight: '4px' }}>
@@ -32,8 +32,8 @@ export default function TransactionsModal({ onClose }) {
                     ) : (
                         todaysOrders.map(order => (
                             <div key={order.id} style={{
-                                background: 'var(--panel-bg)', padding: '14px', borderRadius: '8px',
-                                marginBottom: '10px', border: '1px solid var(--panel-border)', color: 'white'
+                                background: 'var(--bg-color)', padding: '14px', borderRadius: '8px',
+                                marginBottom: '10px', border: '1px solid var(--panel-border)', color: 'var(--text-main)'
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     {/* Order info */}
@@ -54,7 +54,7 @@ export default function TransactionsModal({ onClose }) {
                                         )}
                                     </div>
                                     {/* Amount */}
-                                    <strong style={{ fontSize: '1.2rem', color: '#a3b18a', whiteSpace: 'nowrap', marginLeft: '12px' }}>
+                                    <strong style={{ fontSize: '1.2rem', color: 'var(--color-sides)', whiteSpace: 'nowrap', marginLeft: '12px' }}>
                                         ${order.total.toFixed(2)}
                                     </strong>
                                 </div>
@@ -78,7 +78,7 @@ export default function TransactionsModal({ onClose }) {
                                                 ✓ Yes, Void
                                             </button>
                                             <button
-                                                style={{ padding: '7px 12px', borderRadius: '6px', background: '#444', color: 'white', border: 'none', cursor: 'pointer' }}
+                                                style={{ padding: '7px 12px', borderRadius: '6px', background: '#ecf0f1', color: '#333', border: '1px solid #bdc3c7', cursor: 'pointer', fontWeight: 'bold' }}
                                                 onClick={() => setConfirmVoidId(null)}
                                             >
                                                 Cancel
@@ -99,7 +99,7 @@ export default function TransactionsModal({ onClose }) {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', paddingTop: '10px', borderTop: '1px solid var(--panel-border)' }}>
-                    <button className="cancel-btn" onClick={onClose}>Close</button>
+                    <button className="btn-secondary" style={{ padding: '10px 24px' }} onClick={onClose}>Close</button>
                 </div>
             </div>
         </div>

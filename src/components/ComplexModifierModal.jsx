@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { fishModifiers, specialSideChoices } from '../data/menu';
 
-export default function ComplexModifierModal({ item, onSave, onClose }) {
+export default function ComplexModifierModal({ item, onSave, onClose, priceMultiplier = 1 }) {
     if (!item) return null;
 
     // Track modifiers for EACH fish individually
@@ -127,7 +127,7 @@ export default function ComplexModifierModal({ item, onSave, onClose }) {
                                                 onClick={(e) => { e.preventDefault(); handleFishModifierChange(fish.id, mod); }}
                                             >
                                                 {mod.name} <br />
-                                                <small style={{ color: 'var(--color-success)' }}>+${mod.price.toFixed(2)}</small>
+                                                <small style={{ color: 'var(--color-success)' }}>+${(mod.price * priceMultiplier).toFixed(2)}</small>
                                             </button>
                                         ))}
                                     </div>
