@@ -1,34 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePos } from '../context/PosContext';
 
 export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) {
-    const { cart, removeFromCart, cartTotal, orderType, setOrderType } = usePos();
+    const {
+        cart, removeFromCart, cartSubtotal, cartTotal,
+        orderType, setOrderType,
+        orderNote, setOrderNote,
+        discount, setDiscount, discountAmount
+    } = usePos();
+
+    const [showDiscount, setShowDiscount] = useState(false);
+    const [discountInput, setDiscountInput] = useState('');
+    const [discountType, setDiscountType] = useState('amount'); // 'amount' | 'percent'
+
+    const applyDiscount = () => {
+        const val = parseFloat(discountInput);
+        if (!val || val <= 0) { clearDiscount(); return; }
+        if (discountType === 'percent' && val > 100) return;
+        setDiscount({ type: discountType, value: val });
+        setShowDiscount(false);
+    };
+
+    const clearDiscount = () => {
+        setDiscount({ type: 'none', value: 0 });
+        setDiscountInput('');
+        setShowDiscount(false);
+    };
 
     return (
         <div className="cart-area">
             <div className="cart-header">
                 <h2>Current Order</h2>
                 <div className="cart-type-selector">
-                    <button
-                        className={`cart-type-btn ${orderType === 'walk-in' ? 'active' : ''}`}
-                        onClick={() => setOrderType('walk-in')}
-                    >
-                        Walk In
-                    </button>
-                    <button
-                        className={`cart-type-btn ${orderType === 'phone' ? 'active' : ''}`}
-                        onClick={() => setOrderType('phone')}
-                    >
-                        Phone
-                    </button>
+                    <button className={`cart-type-btn ${orderType === 'walk-in' ? 'active' : ''}`} onClick={() => setOrderType('walk-in')}>Walk In</button>
+                    <button className={`cart-type-btn ${orderType === 'phone' ? 'active' : ''}`} onClick={() => setOrderType('phone')}>Phone</button>
                 </div>
             </div>
 
             <div className="cart-items">
                 {cart.length === 0 ? (
-                    <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px' }}>
-                        No items in order
-                    </div>
+                    <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px' }}>No items in order</div>
                 ) : (
                     cart.map((item) => (
                         <div className="cart-item" key={item.cartItemId}>
@@ -39,9 +50,7 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                             </div>
                             <div className="cart-item-price">
                                 ${item.price.toFixed(2)}
-                                <button className="cart-item-remove" onClick={() => removeFromCart(item.cartItemId)}>
-                                    ×
-                                </button>
+                                <button className="cart-item-remove" onClick={() => removeFromCart(item.cartItemId)}>×</button>
                             </div>
                         </div>
                     ))
@@ -49,63 +58,105 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
             </div>
 
             <div className="cart-footer">
+                {/* Order Note */}
+                <textarea
+                    value={orderNote}
+                    onChange={e => setOrderNote(e.target.value)}
+                    placeholder="📝 Order note (e.g. no onion, extra sauce)..."
+                    maxLength={120}
+                    style={{
+                        width: '100%', boxSizing: 'border-box',
+                        padding: '8px 10px', marginBottom: '10px',
+                        background: 'var(--panel-bg)', color: 'var(--text-main)',
+                        border: orderNote ? '1px solid var(--color-action)' : '1px solid #444',
+                        borderRadius: '8px', fontSize: '0.85rem', resize: 'none',
+                        height: '52px', fontFamily: 'inherit',
+                    }}
+                />
+
+                {/* Totals */}
+                {discountAmount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2px' }}>
+                        <span>Subtotal</span><span>${cartSubtotal.toFixed(2)}</span>
+                    </div>
+                )}
+                {discountAmount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#4caf50', fontSize: '0.9rem', marginBottom: '2px' }}>
+                        <span>
+                            Discount {discount.type === 'percent' ? `(${discount.value}%)` : ''}
+                            <button onClick={clearDiscount} style={{ background: 'none', border: 'none', color: '#f44336', cursor: 'pointer', fontSize: '0.8rem', marginLeft: '6px' }}>✕</button>
+                        </span>
+                        <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                )}
                 <div className="cart-totals">
-                    <span>Total</span>
-                    <span>${cartTotal.toFixed(2)}</span>
+                    <span>Total</span><span>${cartTotal.toFixed(2)}</span>
                 </div>
 
-                {/* Print Invoice button */}
-                <button
-                    onClick={onPrintInvoice}
-                    disabled={cart.length === 0}
-                    style={{
-                        width: '100%',
-                        padding: '10px',
-                        marginBottom: '10px',
-                        background: 'transparent',
-                        color: cart.length === 0 ? 'var(--text-muted)' : 'var(--text-main)',
-                        border: `1px solid ${cart.length === 0 ? '#444' : 'var(--panel-border)'}`,
-                        borderRadius: '8px',
-                        fontWeight: '600',
-                        fontSize: '0.95rem',
-                        cursor: cart.length === 0 ? 'not-allowed' : 'pointer',
-                        letterSpacing: '0.5px'
-                    }}
-                >
-                    🧾 Print Customer Invoice
-                </button>
-
-                {orderType === 'walk-in' ? (
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <button
-                            className="pay-btn"
-                            style={{ flex: 1, background: '#e0a96d', color: '#000' }}
-                            disabled={cart.length === 0}
-                            onClick={() => onPayEftpos('cash')}
+                {/* Discount toggle */}
+                {showDiscount ? (
+                    <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', alignItems: 'center' }}>
+                        <select
+                            value={discountType}
+                            onChange={e => setDiscountType(e.target.value)}
+                            style={{ padding: '8px', borderRadius: '6px', background: 'var(--panel-bg)', color: 'var(--text-main)', border: '1px solid #444', fontSize: '0.9rem' }}
                         >
-                            💵 CASH
-                        </button>
-                        <button
-                            className="pay-btn"
-                            style={{ flex: 2 }}
-                            disabled={cart.length === 0}
-                            onClick={() => onPayEftpos('eftpos')}
-                        >
-                            💳 EFTPOS
-                        </button>
+                            <option value="amount">$ Amount</option>
+                            <option value="percent">% Percent</option>
+                        </select>
+                        <input
+                            type="number" min="0" max={discountType === 'percent' ? 100 : undefined}
+                            value={discountInput}
+                            onChange={e => setDiscountInput(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && applyDiscount()}
+                            placeholder={discountType === 'percent' ? 'e.g. 10' : 'e.g. 5.00'}
+                            autoFocus
+                            style={{ flex: 1, padding: '8px', borderRadius: '6px', background: 'var(--panel-bg)', color: 'var(--text-main)', border: '1px solid var(--color-action)', fontSize: '0.9rem' }}
+                        />
+                        <button onClick={applyDiscount} style={{ padding: '8px 12px', borderRadius: '6px', background: 'var(--color-action)', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>✓</button>
+                        <button onClick={() => setShowDiscount(false)} style={{ padding: '8px 10px', borderRadius: '6px', background: '#444', color: '#fff', border: 'none', cursor: 'pointer' }}>✕</button>
                     </div>
                 ) : (
-                    <button
-                        className="pay-btn"
-                        style={{ background: 'var(--color-action)' }}
-                        disabled={cart.length === 0}
-                        onClick={onSavePhoneOrder}
-                    >
-                        📞 Save Phone Order
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                        <button
+                            onClick={() => setShowDiscount(true)}
+                            disabled={cart.length === 0}
+                            style={{
+                                flex: 1, padding: '9px', background: 'transparent',
+                                color: cart.length === 0 ? '#555' : 'var(--color-success)',
+                                border: `1px solid ${cart.length === 0 ? '#444' : 'var(--color-success)'}`,
+                                borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem',
+                                cursor: cart.length === 0 ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            🏷️ {discountAmount > 0 ? `Discount: -$${discountAmount.toFixed(2)}` : 'Add Discount'}
+                        </button>
+                        <button
+                            onClick={onPrintInvoice}
+                            disabled={cart.length === 0}
+                            style={{
+                                flex: 1, padding: '9px', background: 'transparent',
+                                color: cart.length === 0 ? '#555' : 'var(--text-main)',
+                                border: `1px solid ${cart.length === 0 ? '#444' : 'var(--panel-border)'}`,
+                                borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem',
+                                cursor: cart.length === 0 ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            🧾 Invoice
+                        </button>
+                    </div>
+                )}
+
+                {/* Payment buttons */}
+                {orderType === 'walk-in' ? (
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                        <button className="pay-btn" style={{ flex: 1, background: '#e0a96d', color: '#000' }} disabled={cart.length === 0} onClick={() => onPayEftpos('cash')}>💵 CASH</button>
+                        <button className="pay-btn" style={{ flex: 2 }} disabled={cart.length === 0} onClick={() => onPayEftpos('eftpos')}>💳 EFTPOS</button>
+                    </div>
+                ) : (
+                    <button className="pay-btn" style={{ background: 'var(--color-action)' }} disabled={cart.length === 0} onClick={onSavePhoneOrder}>📞 Save Phone Order</button>
                 )}
             </div>
         </div>
     );
 }
-

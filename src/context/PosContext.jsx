@@ -6,23 +6,21 @@ export const usePos = () => useContext(PosContext);
 
 export const PosProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
-    const [orderType, setOrderType] = useState('walk-in'); // 'walk-in' or 'phone'
+    const [orderType, setOrderType] = useState('walk-in');
     const [phoneOrders, setPhoneOrders] = useState([]);
+    const [orderNote, setOrderNote] = useState('');
+    const [discount, setDiscount] = useState({ type: 'none', value: 0 }); // type: 'none' | 'amount' | 'percent'
 
     const [paidOrders, setPaidOrders] = useState(() => {
         try {
             const todayStr = new Date().toDateString();
             const lastActive = localStorage.getItem('fnc_last_active_date');
-
             if (lastActive !== todayStr) {
-                // It's a new day: Reset transactions and order ID counter
                 localStorage.setItem('fnc_last_active_date', todayStr);
                 localStorage.removeItem('fnc_paid_orders');
                 localStorage.removeItem('fnc_order_counter');
-                // Note: orderFrequencies (Popular menu) intentionally not reset so it learns over time
                 return [];
             }
-
             const saved = localStorage.getItem('fnc_paid_orders');
             return saved ? JSON.parse(saved) : [];
         } catch {
@@ -38,7 +36,6 @@ export const PosProvider = ({ children }) => {
         });
     };
 
-    // Global sequential order ID
     const [orderCounter, setOrderCounter] = useState(() => {
         try {
             const saved = localStorage.getItem('fnc_order_counter');
@@ -56,10 +53,8 @@ export const PosProvider = ({ children }) => {
         return nextId.toString().padStart(3, '0');
     };
 
-    // Kitchen print trigger state
     const [latestPrintedOrder, setLatestPrintedOrder] = useState(null);
 
-    // Track most ordered items
     const [orderFrequencies, setOrderFrequencies] = useState(() => {
         try {
             const saved = localStorage.getItem('fnc_order_frequencies');
@@ -81,10 +76,7 @@ export const PosProvider = ({ children }) => {
     };
 
     const addToCart = (item, modifier = null, seasoning = null) => {
-        // Generate unique ID for cart item
         const cartItemId = Math.random().toString(36).substr(2, 9);
-
-        // Calculate final price based on selected modifier
         let finalPrice = item.price;
         let label = item.name;
 
@@ -97,20 +89,13 @@ export const PosProvider = ({ children }) => {
             label += ` + ${item.inherentItems}`;
         }
 
-        if (seasoning) {
-            label += ` [${seasoning.name}]`;
-        }
-
-        // Check if identical item already exists in cart
         setCart(prev => {
             const existingItemIndex = prev.findIndex(ci =>
                 ci.id === item.id &&
-                ci.modifier?.name === modifier?.name &&
-                ci.seasoning?.name === seasoning?.name
+                ci.modifier?.name === modifier?.name
             );
 
             if (existingItemIndex >= 0) {
-                // Increment quantity
                 const updatedCart = [...prev];
                 updatedCart[existingItemIndex] = {
                     ...updatedCart[existingItemIndex],
@@ -120,14 +105,13 @@ export const PosProvider = ({ children }) => {
                 return updatedCart;
             }
 
-            // Fallback: Add new item
             return [...prev, {
                 cartItemId,
                 ...item,
                 qty: 1,
                 basePrice: item.price,
                 unitPrice: finalPrice,
-                price: finalPrice, // total price for this row
+                price: finalPrice,
                 label,
                 modifier,
                 seasoning
@@ -139,11 +123,53 @@ export const PosProvider = ({ children }) => {
         setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
     };
 
-    const clearCart = () => setCart([]);
+    const clearCart = () => {
+        setCart([]);
+        setOrderNote('');
+        setDiscount({ type: 'none', value: 0 });
+    };
 
-    const cartTotal = useMemo(() => {
+    const cartSubtotal = useMemo(() => {
         return cart.reduce((sum, item) => sum + item.price, 0);
     }, [cart]);
+
+    // Computed discount amount
+    const discountAmount = useMemo(() => {
+        if (discount.type === 'amount') return Math.min(discount.value, cartSubtotal);
+        if (discount.type === 'percent') return Math.round((cartSubtotal * discount.value / 100) * 100) / 100;
+        return 0;
+    }, [discount, cartSubtotal]);
+
+    const cartTotal = useMemo(() => {
+        return Math.max(0, cartSubtotal - discountAmount);
+    }, [cartSubtotal, discountAmount]);
+
+    // Daily stats derived from paidOrders
+    const dailyStats = useMemo(() => {
+        const totalRevenue = paidOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+        const totalOrders = paidOrders.length;
+
+        // Top items by quantity
+        const itemCounts = {};
+        paidOrders.forEach(order => {
+            (order.items || []).forEach(item => {
+                const key = item.name;
+                itemCounts[key] = (itemCounts[key] || 0) + (item.qty || 1);
+            });
+        });
+        const topItems = Object.entries(itemCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, qty]) => ({ name, qty }));
+
+        // Payment method breakdown
+        const cashOrders = paidOrders.filter(o => o.paymentMethod === 'cash');
+        const eftposOrders = paidOrders.filter(o => o.paymentMethod === 'eftpos');
+        const cashTotal = cashOrders.reduce((s, o) => s + (o.total || 0), 0);
+        const eftposTotal = eftposOrders.reduce((s, o) => s + (o.total || 0), 0);
+
+        return { totalRevenue, totalOrders, topItems, cashTotal, eftposTotal };
+    }, [paidOrders]);
 
     const savePhoneOrder = (customerName, seasoning = null) => {
         const stampedItems = cart.map(item => ({ ...item, seasoning }));
@@ -151,12 +177,15 @@ export const PosProvider = ({ children }) => {
             id: getNextOrderId(),
             customerName,
             seasoning,
+            note: orderNote || null,
+            discount: discountAmount > 0 ? { type: discount.type, value: discount.value, amount: discountAmount } : null,
             items: stampedItems,
+            subtotal: cartSubtotal,
             total: cartTotal,
+            paymentMethod: 'phone',
             time: new Date(),
             status: 'unpaid'
         };
-
         setPhoneOrders(prev => [...prev, newOrder]);
         triggerKitchenPrint(newOrder);
         clearCart();
@@ -172,14 +201,18 @@ export const PosProvider = ({ children }) => {
         setPhoneOrders(prev => prev.filter(o => o.id !== orderId));
     };
 
-    const processWalkInPayment = (seasoning = null) => {
+    const processWalkInPayment = (seasoning = null, method = 'cash') => {
         const stampedItems = cart.map(item => ({ ...item, seasoning }));
         const newOrder = {
             id: getNextOrderId(),
             customerName: 'Walk-in',
             seasoning,
+            note: orderNote || null,
+            discount: discountAmount > 0 ? { type: discount.type, value: discount.value, amount: discountAmount } : null,
             items: stampedItems,
+            subtotal: cartSubtotal,
             total: cartTotal,
+            paymentMethod: method,
             time: new Date().toISOString(),
             status: 'paid'
         };
@@ -190,7 +223,15 @@ export const PosProvider = ({ children }) => {
 
     const triggerKitchenPrint = (order, isReprint = false) => {
         if (!isReprint) recordOrderFrequencies(order.items);
-        setLatestPrintedOrder(order);
+        setLatestPrintedOrder({ ...order, _printTimestamp: Date.now() });
+    };
+
+    const voidOrder = (orderId) => {
+        setPaidOrders(prev => {
+            const updated = prev.filter(o => o.id !== orderId);
+            localStorage.setItem('fnc_paid_orders', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     return (
@@ -199,9 +240,15 @@ export const PosProvider = ({ children }) => {
             addToCart,
             removeFromCart,
             clearCart,
+            cartSubtotal,
             cartTotal,
             orderType,
             setOrderType,
+            orderNote,
+            setOrderNote,
+            discount,
+            setDiscount,
+            discountAmount,
             phoneOrders,
             savePhoneOrder,
             payPhoneOrder,
@@ -209,7 +256,9 @@ export const PosProvider = ({ children }) => {
             latestPrintedOrder,
             orderFrequencies,
             paidOrders,
-            triggerKitchenPrint
+            dailyStats,
+            triggerKitchenPrint,
+            voidOrder
         }}>
             {children}
         </PosContext.Provider>

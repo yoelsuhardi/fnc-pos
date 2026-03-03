@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePos } from '../context/PosContext';
-
-const STORAGE_KEY = 'fnc_eftpos_ip';
+import { pairTerminal, generateRegisterId } from '../services/SmartpayService';
 
 export default function SettingsModal({ onClose }) {
     const { triggerKitchenPrint } = usePos();
-    const [eftposIp, setEftposIp] = useState(() => localStorage.getItem(STORAGE_KEY) || '');
-    const [eftposPort, setEftposPort] = useState(() => localStorage.getItem('fnc_eftpos_port') || '8080');
-    const [eftposStatus, setEftposStatus] = useState(null);
 
-    const handleSaveIp = () => {
-        localStorage.setItem(STORAGE_KEY, eftposIp);
-        localStorage.setItem('fnc_eftpos_port', eftposPort);
-        setEftposStatus('✅ Settings saved!');
-        setTimeout(() => setEftposStatus(null), 2000);
-    };
+    // SmartConnect State
+    const [pairingCode, setPairingCode] = useState('');
+    const [isTestEnv, setIsTestEnv] = useState(true); // Default to test for safety
+    const [pairingStatus, setPairingStatus] = useState(null);
+    const [isPairing, setIsPairing] = useState(false);
+
+    // Check if already paired
+    const [isPaired, setIsPaired] = useState(() => !!localStorage.getItem('smartpay_paired'));
 
     const handleTestPrint = () => {
         const testOrder = {
@@ -27,17 +25,32 @@ export default function SettingsModal({ onClose }) {
         triggerKitchenPrint(testOrder, true);
     };
 
-    const handlePingEftpos = () => {
-        if (!eftposIp) {
-            setEftposStatus('⚠️ Please enter your terminal IP address first.');
+    const handlePair = async () => {
+        if (!pairingCode.trim()) {
+            setPairingStatus({ type: 'error', msg: 'Please enter a pairing code.' });
             return;
         }
-        setEftposStatus(`Pinging ${eftposIp}:${eftposPort}...`);
-        // In a real integration this would call the Smartpay SDK endpoint
-        // e.g. fetch(`http://${eftposIp}:${eftposPort}/status`)
-        setTimeout(() => {
-            setEftposStatus(`✅ Connected: ${eftposIp}:${eftposPort} is Ready`);
-        }, 1500);
+
+        setIsPairing(true);
+        setPairingStatus({ type: 'info', msg: 'Connecting to SmartConnect...' });
+
+        const result = await pairTerminal(pairingCode.trim(), 'FNC POS', 'FNC POS System', isTestEnv);
+
+        if (result.success) {
+            localStorage.setItem('smartpay_paired', 'true');
+            localStorage.setItem('smartpay_env', isTestEnv ? 'test' : 'prod');
+            setIsPaired(true);
+            setPairingStatus({ type: 'success', msg: `✅ Paired Successfully! Register ID: ${result.registerId}` });
+        } else {
+            setPairingStatus({ type: 'error', msg: `❌ Pairing Failed: ${result.error}` });
+        }
+        setIsPairing(false);
+    };
+
+    const handleUnpair = () => {
+        localStorage.removeItem('smartpay_paired');
+        setIsPaired(false);
+        setPairingStatus({ type: 'info', msg: 'Unpaired locally. Note: You must also unpair on the terminal itself.' });
     };
 
     const inputStyle = {
@@ -48,7 +61,8 @@ export default function SettingsModal({ onClose }) {
         background: 'rgba(255,255,255,0.05)',
         color: 'var(--text-main)',
         fontSize: '1rem',
-        outline: 'none'
+        outline: 'none',
+        boxSizing: 'border-box'
     };
 
     return (
@@ -74,70 +88,83 @@ export default function SettingsModal({ onClose }) {
                         </button>
                     </div>
 
-                    {/* EFTPOS Settings */}
+                    {/* Smartpay EFTPOS Settings */}
                     <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
-                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)' }}>💳 EFTPOS Terminal (Smartpay)</h3>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '15px' }}>
-                            Enter the IP address shown on your Smartpay terminal under Settings → Integration.
-                        </p>
+                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)' }}>💳 EFTPOS (Smartpay Cloud)</h3>
 
-                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                            <div style={{ flex: 3 }}>
-                                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block', marginBottom: '5px' }}>Terminal IP Address</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. 192.168.1.50"
-                                    value={eftposIp}
-                                    onChange={(e) => setEftposIp(e.target.value)}
-                                    style={inputStyle}
-                                />
+                        {isPaired ? (
+                            <div style={{ padding: '15px', background: 'rgba(76, 175, 80, 0.1)', border: '1px solid var(--color-success)', borderRadius: '8px', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.2rem', color: 'var(--color-success)', fontWeight: 'bold', marginBottom: '10px' }}>✅ Terminal Paired</div>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '15px' }}>
+                                    Register ID: {generateRegisterId()}<br />
+                                    Environment: {localStorage.getItem('smartpay_env') === 'prod' ? 'Production' : 'Test'}
+                                </div>
+                                <button
+                                    onClick={handleUnpair}
+                                    style={{ padding: '8px 16px', background: 'transparent', color: '#f44336', border: '1px solid #f44336', borderRadius: '4px', cursor: 'pointer' }}
+                                >
+                                    Unpair Terminal
+                                </button>
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block', marginBottom: '5px' }}>Port</label>
-                                <input
-                                    type="text"
-                                    placeholder="8080"
-                                    value={eftposPort}
-                                    onChange={(e) => setEftposPort(e.target.value)}
-                                    style={inputStyle}
-                                />
-                            </div>
-                        </div>
+                        ) : (
+                            <>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '15px' }}>
+                                    1. Go to <strong>Settings &gt; Integration &gt; SmartConnect</strong> on your PAX device.<br />
+                                    2. Start pairing on the device to get a 6-digit code.<br />
+                                    3. Enter the code below.
+                                </p>
 
-                        <button
-                            onClick={handleSaveIp}
-                            style={{ width: '100%', padding: '10px', background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}
-                        >
-                            💾 Save Settings
-                        </button>
+                                <div style={{ marginBottom: '15px' }}>
+                                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block', marginBottom: '5px' }}>Environment</label>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <button
+                                            onClick={() => setIsTestEnv(true)}
+                                            style={{ flex: 1, padding: '8px', background: isTestEnv ? 'var(--color-action)' : 'transparent', color: 'white', border: '1px solid var(--color-action)', borderRadius: '4px', cursor: 'pointer' }}
+                                        >Test (Dev)</button>
+                                        <button
+                                            onClick={() => setIsTestEnv(false)}
+                                            style={{ flex: 1, padding: '8px', background: !isTestEnv ? 'var(--color-action)' : 'transparent', color: 'white', border: '1px solid var(--color-action)', borderRadius: '4px', cursor: 'pointer' }}
+                                        >Production</button>
+                                    </div>
+                                </div>
 
-                        {eftposStatus && (
-                            <div style={{
-                                padding: '10px',
-                                marginBottom: '10px',
-                                background: eftposStatus.includes('✅') ? 'rgba(76, 175, 80, 0.2)' : eftposStatus.includes('⚠️') ? 'rgba(255, 152, 0, 0.2)' : 'rgba(255,255,255,0.05)',
-                                color: eftposStatus.includes('✅') ? 'var(--color-success)' : eftposStatus.includes('⚠️') ? '#ff9800' : 'var(--text-main)',
-                                borderRadius: '4px',
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                                fontSize: '0.9rem'
-                            }}>
-                                {eftposStatus}
-                            </div>
+                                <div style={{ marginBottom: '15px' }}>
+                                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block', marginBottom: '5px' }}>Pairing Code</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. 123456"
+                                        value={pairingCode}
+                                        onChange={(e) => setPairingCode(e.target.value)}
+                                        style={{ ...inputStyle, fontSize: '1.2rem', letterSpacing: '2px', textAlign: 'center' }}
+                                        maxLength={8}
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handlePair}
+                                    disabled={isPairing || !pairingCode}
+                                    style={{ width: '100%', padding: '12px', background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: (isPairing || !pairingCode) ? 'not-allowed' : 'pointer', opacity: (isPairing || !pairingCode) ? 0.5 : 1 }}
+                                >
+                                    {isPairing ? 'Pairing...' : '🔗 Pair Terminal'}
+                                </button>
+                            </>
                         )}
 
-                        <button
-                            onClick={handlePingEftpos}
-                            style={{ width: '100%', padding: '12px', background: 'var(--color-action)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
-                        >
-                            📡 Ping Terminal
-                        </button>
+                        {pairingStatus && (
+                            <div style={{
+                                marginTop: '15px', padding: '10px', borderRadius: '4px', fontSize: '0.85rem', textAlign: 'center',
+                                background: pairingStatus.type === 'success' ? 'rgba(76,175,80,0.2)' : pairingStatus.type === 'error' ? 'rgba(244,67,54,0.2)' : 'rgba(255,255,255,0.05)',
+                                color: pairingStatus.type === 'success' ? 'var(--color-success)' : pairingStatus.type === 'error' ? '#f44336' : 'var(--text-main)'
+                            }}>
+                                {pairingStatus.msg}
+                            </div>
+                        )}
                     </div>
 
                 </div>
 
                 <div className="modal-actions" style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--panel-border)' }}>
-                    <button className="btn-secondary" style={{ width: '100%' }} onClick={onClose}>Close Settings</button>
+                    <button className="cancel-btn" style={{ width: '100%' }} onClick={onClose}>Close Settings</button>
                 </div>
             </div>
         </div>

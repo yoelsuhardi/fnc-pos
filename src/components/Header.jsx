@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ openPhoneQueue, openTransactions, openSettings }) {
+export default function Header({ openPhoneQueue, openTransactions, openDailyClose, openSettings }) {
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -20,20 +20,27 @@ export default function Header({ openPhoneQueue, openTransactions, openSettings 
                     ⚙️
                 </button>
             </div>
-            <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button
                     className="cart-type-btn"
-                    style={{ background: '#a3b18a', color: '#000', padding: '8px 16px', borderRadius: '8px' }}
-                    onClick={openTransactions}
+                    style={{ background: '#3a3a5c', color: 'white', padding: '8px 14px', borderRadius: '8px' }}
+                    onClick={openDailyClose}
                 >
-                    📊 Daily Transactions
+                    📊 Daily Close
                 </button>
                 <button
                     className="cart-type-btn"
-                    style={{ background: 'var(--color-specials)', color: 'white', padding: '8px 16px', borderRadius: '8px' }}
+                    style={{ background: '#a3b18a', color: '#000', padding: '8px 14px', borderRadius: '8px' }}
+                    onClick={openTransactions}
+                >
+                    🧾 Transactions
+                </button>
+                <button
+                    className="cart-type-btn"
+                    style={{ background: 'var(--color-specials)', color: 'white', padding: '8px 14px', borderRadius: '8px' }}
                     onClick={openPhoneQueue}
                 >
-                    💳 Pay Phone Orders
+                    💳 Phone Orders
                 </button>
                 <div className="clock">
                     {time.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

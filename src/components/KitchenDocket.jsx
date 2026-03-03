@@ -168,6 +168,16 @@ export default function KitchenDocket() {
                         SEASONING: {getSeasoningAcronym(latestPrintedOrder.seasoning)}
                     </div>
                 )}
+                {latestPrintedOrder.note && (
+                    <div style={{ marginTop: '6px', fontSize: '13pt', borderTop: '1px dashed black', paddingTop: '6px' }}>
+                        NOTE: {latestPrintedOrder.note}
+                    </div>
+                )}
+                {latestPrintedOrder.discount && (
+                    <div style={{ marginTop: '6px', fontSize: '13pt' }}>
+                        DISCOUNT: -${latestPrintedOrder.discount.amount?.toFixed(2)}
+                    </div>
+                )}
             </div>
 
             <div className="docket-items">

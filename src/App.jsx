@@ -10,6 +10,7 @@ import TransactionsModal from './components/TransactionsModal';
 import SettingsModal from './components/SettingsModal';
 import SeasoningModal from './components/SeasoningModal';
 import CustomerInvoice from './components/CustomerInvoice';
+import DailyCloseModal from './components/DailyCloseModal';
 import { usePos } from './context/PosContext';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showQueueModal, setShowQueueModal] = useState(false);
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
+  const [showDailyClose, setShowDailyClose] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showEftpos, setShowEftpos] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -88,6 +90,7 @@ function App() {
         <Header
           openPhoneQueue={() => setShowQueueModal(true)}
           openTransactions={() => setShowTransactionsModal(true)}
+          openDailyClose={() => setShowDailyClose(true)}
           openSettings={() => setShowSettings(true)}
         />
 
@@ -109,6 +112,13 @@ function App() {
         <CustomerInvoice
           order={invoiceOrder}
           onClose={() => setShowInvoice(false)}
+        />
+      )}
+
+      {/* Daily Close Modal */}
+      {showDailyClose && (
+        <DailyCloseModal
+          onClose={() => setShowDailyClose(false)}
         />
       )}
 
