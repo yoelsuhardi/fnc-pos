@@ -482,8 +482,8 @@ body {
   }
 
   body:not(.printing-invoice) .kitchen-docket {
-    width: 72mm;
-    padding: 2mm 2mm 2mm 6mm;
+    width: 68mm;
+    padding: 0 4mm 2mm 4mm;
     margin: 0;
     background: white;
     color: black;

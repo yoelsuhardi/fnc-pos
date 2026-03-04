@@ -165,17 +165,17 @@ export default function KitchenDocket() {
                     Time: {new Date(latestPrintedOrder.time || latestPrintedOrder.paidTime).toLocaleTimeString('en-AU')}
                 </div>
                 {latestPrintedOrder.seasoning && (
-                    <div style={{ marginTop: '6px', fontWeight: 'bold', fontSize: '16pt', borderTop: '1px dashed black', paddingTop: '6px' }}>
+                    <div style={{ marginTop: '6px', fontWeight: 'bold', fontSize: '14pt', borderTop: '1px dashed black', paddingTop: '6px' }}>
                         SEASONING: {getSeasoningAcronym(latestPrintedOrder.seasoning)}
                     </div>
                 )}
                 {latestPrintedOrder.note && (
-                    <div style={{ marginTop: '6px', fontSize: '13pt', borderTop: '1px dashed black', paddingTop: '6px' }}>
+                    <div style={{ marginTop: '6px', fontSize: '12pt', borderTop: '1px dashed black', paddingTop: '6px' }}>
                         NOTE: {latestPrintedOrder.note}
                     </div>
                 )}
                 {latestPrintedOrder.discount && (
-                    <div style={{ marginTop: '6px', fontSize: '13pt' }}>
+                    <div style={{ marginTop: '6px', fontSize: '12pt' }}>
                         DISCOUNT: -${latestPrintedOrder.discount.amount?.toFixed(2)}
                     </div>
                 )}
@@ -193,7 +193,7 @@ export default function KitchenDocket() {
                     if (isFisherman) {
                         return (
                             <div key={idx} className="docket-item">
-                                <div style={{ fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
+                                <div style={{ fontWeight: 'bold', fontSize: '16pt', textTransform: 'uppercase' }}>
                                     {item.qty || 1}x FISHERMAN
                                 </div>
                             </div>
@@ -203,7 +203,7 @@ export default function KitchenDocket() {
                     if (isComplex) {
                         return (
                             <div key={idx} className="docket-item">
-                                <div style={{ marginBottom: '8px', fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
+                                <div style={{ marginBottom: '6px', fontWeight: 'bold', fontSize: '16pt', textTransform: 'uppercase' }}>
                                     {item.qty || 1}x {abbreviatePackageName(item.name)}
                                 </div>
                                 <div style={{ paddingLeft: '8px' }}>
@@ -212,7 +212,7 @@ export default function KitchenDocket() {
                                         // Specific exception for Chips printing without quantities
                                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
                                         return (
-                                            <div key={sIdx} style={{ fontSize: '20pt', fontWeight: 'bold', marginBottom: '4px' }}>
+                                            <div key={sIdx} style={{ fontSize: '16pt', fontWeight: 'bold', marginBottom: '4px' }}>
                                                 {isChips ? abbrName : `${sub.qty * (item.qty || 1)} ${abbrName}`}
                                             </div>
                                         );
@@ -240,7 +240,7 @@ export default function KitchenDocket() {
 
                         return (
                             <div key={idx} className="docket-item">
-                                <div style={{ fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
+                                <div style={{ fontWeight: 'bold', fontSize: '16pt', textTransform: 'uppercase' }}>
                                     {isChips ? abbrName : `${normalQty} ${abbrName}`}
                                 </div>
                             </div>
@@ -250,19 +250,19 @@ export default function KitchenDocket() {
             </div>
 
             {/* Total */}
-            <div style={{ borderTop: '2px dashed black', marginTop: '12px', paddingTop: '10px', textAlign: 'right', fontSize: '20pt', fontWeight: 'bold' }}>
+            <div style={{ borderTop: '2px dashed black', marginTop: '12px', paddingTop: '10px', textAlign: 'right', fontSize: '18pt', fontWeight: 'bold' }}>
                 TOTAL: ${latestPrintedOrder.total?.toFixed(2)}
             </div>
 
             {/* Tear-off Queue Ticket */}
             {isQueueEnabled && (
-                <div style={{ marginTop: '40px', borderTop: '2px dashed black', paddingTop: '20px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '14pt', marginBottom: '5px' }}>✂️------------------</div>
-                    <div style={{ fontSize: '16pt', fontWeight: 'bold' }}>CUSTOMER TICKET</div>
-                    <div style={{ fontSize: '14pt', marginBottom: '10px', marginTop: '4px' }}>
+                <div style={{ marginTop: '30px', borderTop: '2px dashed black', paddingTop: '15px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '12pt', marginBottom: '5px' }}>✂️------------------</div>
+                    <div style={{ fontSize: '14pt', fontWeight: 'bold' }}>CUSTOMER TICKET</div>
+                    <div style={{ fontSize: '12pt', marginBottom: '10px', marginTop: '4px' }}>
                         {latestPrintedOrder.customerName === 'Walk-in' ? 'Walk-in' : latestPrintedOrder.customerName}
                     </div>
-                    <div style={{ fontSize: '60pt', fontWeight: '900', lineHeight: '1', margin: '15px 0' }}>
+                    <div style={{ fontSize: '48pt', fontWeight: '900', lineHeight: '1', margin: '15px 0' }}>
                         {latestPrintedOrder.id}
                     </div>
                     <div style={{ fontSize: '12pt', fontStyle: 'italic' }}>Please wait for your number</div>
