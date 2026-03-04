@@ -138,62 +138,64 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
                     </div>
 
                     {/* Right Column: Side Choices Container Elements */}
-                    <div style={{ flex: 1 }}>
-                        <h3 style={{ marginBottom: '16px', color: 'var(--color-chips)', position: 'sticky', top: 0, background: 'var(--panel-bg)', zIndex: 10, paddingBottom: '8px' }}>
-                            2. Choose {item.sideChoicesCount} Sides
-                            <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-muted)', marginLeft: '8px' }}>
-                                ({totalSidesSelected}/{item.sideChoicesCount})
-                            </span>
-                        </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {specialSideChoices.map(choice => {
-                                const count = sideChoices[choice.id] || 0;
-                                const maxReached = totalSidesSelected >= item.sideChoicesCount;
+                    {item.sideChoicesCount > 0 && (
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ marginBottom: '16px', color: 'var(--color-chips)', position: 'sticky', top: 0, background: 'var(--panel-bg)', zIndex: 10, paddingBottom: '8px' }}>
+                                2. Choose {item.sideChoicesCount} Sides
+                                <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-muted)', marginLeft: '8px' }}>
+                                    ({totalSidesSelected}/{item.sideChoicesCount})
+                                </span>
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {specialSideChoices.map(choice => {
+                                    const count = sideChoices[choice.id] || 0;
+                                    const maxReached = totalSidesSelected >= item.sideChoicesCount;
 
-                                return (
-                                    <div key={choice.id} style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        background: count > 0 ? '#f0f9ff' : '#f8fafc',
-                                        padding: '16px 20px',
-                                        borderRadius: '8px',
-                                        border: count > 0 ? '1px solid var(--color-action)' : '1px solid var(--panel-border)',
-                                        boxShadow: count > 0 ? 'var(--shadow-sm)' : 'none'
-                                    }}>
-                                        <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{choice.name}</div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                            <button
-                                                onClick={() => handleDecrementSide(choice.id)}
-                                                disabled={count === 0}
-                                                style={{
-                                                    width: '40px', height: '40px', borderRadius: '50%',
-                                                    border: 'none', background: 'var(--panel-border)', color: 'white',
-                                                    fontSize: '1.5rem', cursor: count === 0 ? 'not-allowed' : 'pointer',
-                                                    opacity: count === 0 ? 0.3 : 1
-                                                }}
-                                            >-</button>
+                                    return (
+                                        <div key={choice.id} style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            background: count > 0 ? '#f0f9ff' : '#f8fafc',
+                                            padding: '16px 20px',
+                                            borderRadius: '8px',
+                                            border: count > 0 ? '1px solid var(--color-action)' : '1px solid var(--panel-border)',
+                                            boxShadow: count > 0 ? 'var(--shadow-sm)' : 'none'
+                                        }}>
+                                            <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{choice.name}</div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                <button
+                                                    onClick={() => handleDecrementSide(choice.id)}
+                                                    disabled={count === 0}
+                                                    style={{
+                                                        width: '40px', height: '40px', borderRadius: '50%',
+                                                        border: 'none', background: 'var(--panel-border)', color: 'white',
+                                                        fontSize: '1.5rem', cursor: count === 0 ? 'not-allowed' : 'pointer',
+                                                        opacity: count === 0 ? 0.3 : 1
+                                                    }}
+                                                >-</button>
 
-                                            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', width: '30px', textAlign: 'center' }}>
-                                                {count}
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', width: '30px', textAlign: 'center' }}>
+                                                    {count}
+                                                </div>
+
+                                                <button
+                                                    onClick={() => handleIncrementSide(choice.id)}
+                                                    disabled={maxReached}
+                                                    style={{
+                                                        width: '40px', height: '40px', borderRadius: '50%',
+                                                        border: 'none', background: 'var(--color-action)', color: 'white',
+                                                        fontSize: '1.5rem', cursor: maxReached ? 'not-allowed' : 'pointer',
+                                                        opacity: maxReached ? 0.3 : 1
+                                                    }}
+                                                >+</button>
                                             </div>
-
-                                            <button
-                                                onClick={() => handleIncrementSide(choice.id)}
-                                                disabled={maxReached}
-                                                style={{
-                                                    width: '40px', height: '40px', borderRadius: '50%',
-                                                    border: 'none', background: 'var(--color-action)', color: 'white',
-                                                    fontSize: '1.5rem', cursor: maxReached ? 'not-allowed' : 'pointer',
-                                                    opacity: maxReached ? 0.3 : 1
-                                                }}
-                                            >+</button>
                                         </div>
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="modal-actions" style={{ marginTop: '32px', paddingTop: '16px', borderTop: '1px solid var(--panel-border)' }}>

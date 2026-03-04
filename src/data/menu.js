@@ -42,6 +42,18 @@ export const menuItems = [
     inherentItems: '1 Kid\'s Box, 4 Squid Rings, 1 Crab Stick, 2 Crumbed Prawns, 1 Sea Scallop',
     image: 'https://fishnchipswa.com/uploads/thumb/88cd3be11567832bf0a26ed47a02545b.jpg'
   },
+  {
+    id: 'sp_4',
+    categoryId: 'specials',
+    name: 'Fish and Chips',
+    price: 17.00,
+    hasComplexModifiers: true,
+    fishCount: 1,
+    sideChoicesCount: 0,
+    inherentItems: '1 $4.00 Chips',
+    requiresSeasoning: true,
+    image: 'https://fishnchipswa.com/uploads/thumb/87726f1cce23be962ed86dad9b7b4f34.jpg'
+  },
 
   // Fish (Supports Modifiers)
   { id: 'f_1', categoryId: 'fish', name: 'Fish of the Day', price: 13.00, hasModifiers: true, requiresSeasoning: true, image: 'https://fishnchipswa.com/uploads/thumb/87726f1cce23be962ed86dad9b7b4f34.jpg' },
