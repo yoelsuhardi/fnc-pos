@@ -4,11 +4,11 @@ import { usePos } from '../context/PosContext';
 // Detect if running inside Electron
 const isElectron = typeof window !== 'undefined' && window.process?.type === 'renderer';
 
-const triggerPrint = (isPreviewEnabled) => {
+const triggerPrint = (isPreviewEnabled, selectedPrinter) => {
     if (isElectron) {
         // Silent print via Electron IPC — controls dialog
         const { ipcRenderer } = window.require('electron');
-        ipcRenderer.send('silent-print', isPreviewEnabled);
+        ipcRenderer.send('silent-print', { isPreview: isPreviewEnabled, printerName: selectedPrinter });
     } else {
         // Fallback for browser dev mode
         window.print();
@@ -16,13 +16,13 @@ const triggerPrint = (isPreviewEnabled) => {
 };
 
 export default function KitchenDocket() {
-    const { latestPrintedOrder, isQueueEnabled, isPreviewEnabled } = usePos();
+    const { latestPrintedOrder, isQueueEnabled, isPreviewEnabled, selectedPrinter } = usePos();
 
     useEffect(() => {
         if (latestPrintedOrder) {
             // Allow DOM to repaint before printing
             const timer = setTimeout(() => {
-                triggerPrint(isPreviewEnabled);
+                triggerPrint(isPreviewEnabled, selectedPrinter);
             }, 500);
             return () => clearTimeout(timer);
         }

@@ -26,6 +26,10 @@ export const PosProvider = ({ children }) => {
         return localStorage.getItem('fnc_preview_enabled') === 'true';
     });
 
+    const [selectedPrinter, setSelectedPrinter] = useState(() => {
+        return localStorage.getItem('fnc_selected_printer') || '';
+    });
+
     const toggleHolidaySurcharge = () => {
         setIsHolidaySurcharge(prev => {
             const next = !prev;
@@ -48,6 +52,11 @@ export const PosProvider = ({ children }) => {
             localStorage.setItem('fnc_preview_enabled', next.toString());
             return next;
         });
+    };
+
+    const setPrinter = (printerName) => {
+        setSelectedPrinter(printerName);
+        localStorage.setItem('fnc_selected_printer', printerName || '');
     };
 
     const [paidOrders, setPaidOrders] = useState(() => {
@@ -339,6 +348,8 @@ export const PosProvider = ({ children }) => {
             toggleQueueEnabled,
             isPreviewEnabled,
             togglePreviewEnabled,
+            selectedPrinter,
+            setPrinter,
             phoneOrders,
             savePhoneOrder,
             payPhoneOrder,

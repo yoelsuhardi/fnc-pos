@@ -27,17 +27,42 @@ function createWindow() {
 }
 
 // ─── Silent Print IPC handler ─────────────────────────────────────────────────
+ipcMain.handle('get-printers', async (event) => {
+    try {
+        return await event.sender.getPrintersAsync();
+    } catch (err) {
+        console.error('Failed to get printers:', err);
+        return [];
+    }
+});
+
 // Called from KitchenDocket.jsx via ipcRenderer.send('silent-print')
-ipcMain.on('silent-print', (event, isPreview = false) => {
+ipcMain.on('silent-print', (event, payload) => {
+    let isPreview = false;
+    let printerName = '';
+
+    if (typeof payload === 'object' && payload !== null) {
+        isPreview = !!payload.isPreview;
+        printerName = payload.printerName || '';
+    } else {
+        isPreview = !!payload;
+    }
+
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return;
 
+    const printOptions = {
+        silent: !isPreview,  // Dialog shown only if isPreview is true
+        printBackground: true, // Print background colors/styles
+        margins: { marginType: 'none' } // Use thermal printer margins
+    };
+
+    if (!isPreview && printerName) {
+        printOptions.deviceName = printerName;
+    }
+
     win.webContents.print(
-        {
-            silent: !isPreview,  // Dialog shown only if isPreview is true
-            printBackground: true, // Print background colors/styles
-            margins: { marginType: 'none' } // Use thermal printer margins
-        },
+        printOptions,
         (success, errorType) => {
             if (!success) {
                 console.error('[Silent Print] Failed:', errorType);

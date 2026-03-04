@@ -10,7 +10,9 @@ export default function SettingsModal({ onClose }) {
         isQueueEnabled,
         toggleQueueEnabled,
         isPreviewEnabled,
-        togglePreviewEnabled
+        togglePreviewEnabled,
+        selectedPrinter,
+        setPrinter
     } = usePos();
 
     // SmartConnect State
@@ -21,6 +23,16 @@ export default function SettingsModal({ onClose }) {
 
     // Check if already paired
     const [isPaired, setIsPaired] = useState(() => !!localStorage.getItem('smartpay_paired'));
+
+    const [systemPrinters, setSystemPrinters] = useState([]);
+
+    React.useEffect(() => {
+        if (window.ipcRenderer) {
+            window.ipcRenderer.invoke('get-printers').then(printers => {
+                setSystemPrinters(printers || []);
+            }).catch(e => console.error(e));
+        }
+    }, []);
 
     const handleTestPrint = () => {
         const testOrder = {
@@ -157,10 +169,26 @@ export default function SettingsModal({ onClose }) {
                         </p>
                     </div>
 
-                    {/* Thermal Printer */}
+                    {/* Thermal Printer Settings */}
                     <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
-                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)' }}>🖨️ Thermal Printer</h3>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '15px' }}>
+                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>🖨️ Thermal Printer Configuration</span>
+                        </h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '10px' }}>
+                            Select your thermal printer to avoid blank pages when "Print Preview" is OFF. Default OS printers often incorrectly scale 80mm rolls.
+                        </p>
+                        <select
+                            value={selectedPrinter}
+                            onChange={(e) => setPrinter(e.target.value)}
+                            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '1rem', outline: 'none', marginBottom: '15px' }}
+                        >
+                            <option value="">-- Let OS Decide Default Printer --</option>
+                            {systemPrinters.map((p, idx) => (
+                                <option key={idx} value={p.name}>{p.name} {p.isDefault ? '(Default)' : ''}</option>
+                            ))}
+                        </select>
+
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '10px' }}>
                             Print a test docket to verify paper alignment and printer connectivity.
                         </p>
                         <button
