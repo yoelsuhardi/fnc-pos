@@ -34,7 +34,7 @@ ipcMain.on('silent-print', (event) => {
 
     win.webContents.print(
         {
-            silent: true,          // No print dialog
+            silent: false,         // No print dialog
             printBackground: true, // Print background colors/styles
             margins: { marginType: 'none' } // Use thermal printer margins
         },
