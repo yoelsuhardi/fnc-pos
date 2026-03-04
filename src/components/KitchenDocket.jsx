@@ -193,7 +193,7 @@ export default function KitchenDocket() {
                         return (
                             <div key={idx} className="docket-item">
                                 <div style={{ fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
-                                    1x FISHERMAN
+                                    {item.qty || 1}x FISHERMAN
                                 </div>
                             </div>
                         );
@@ -203,7 +203,7 @@ export default function KitchenDocket() {
                         return (
                             <div key={idx} className="docket-item">
                                 <div style={{ marginBottom: '8px', fontWeight: 'bold', fontSize: '20pt', textTransform: 'uppercase' }}>
-                                    1x {abbreviatePackageName(item.name)}
+                                    {item.qty || 1}x {abbreviatePackageName(item.name)}
                                 </div>
                                 <div style={{ paddingLeft: '8px' }}>
                                     {subItems.map((sub, sIdx) => {
@@ -212,7 +212,7 @@ export default function KitchenDocket() {
                                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
                                         return (
                                             <div key={sIdx} style={{ fontSize: '20pt', fontWeight: 'bold', marginBottom: '4px' }}>
-                                                {isChips ? abbrName : `${sub.qty} ${abbrName}`}
+                                                {isChips ? abbrName : `${sub.qty * (item.qty || 1)} ${abbrName}`}
                                             </div>
                                         );
                                     })}
@@ -221,11 +221,11 @@ export default function KitchenDocket() {
                         );
                     } else {
                         // For normal items like "Squid Rings (6)", separate "6" into quantity
-                        let normalQty = 1;
+                        let normalQty = item.qty || 1;
                         let normalName = item.name;
                         const matchQty6 = normalName.match(/^(.*?)\s*\((\d+)\)$/);
                         if (matchQty6) {
-                            normalQty = parseInt(matchQty6[2]);
+                            normalQty = (item.qty || 1) * parseInt(matchQty6[2]);
                             normalName = matchQty6[1].trim();
                         }
 
