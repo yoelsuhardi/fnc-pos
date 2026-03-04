@@ -457,6 +457,16 @@ body {
     margin: 0;
   }
 
+  html,
+  body,
+  #root {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   /* ── Default mode: Kitchen Docket ─────────────────── */
   body:not(.printing-invoice) .pos-container,
   body:not(.printing-invoice) .modal-overlay,
