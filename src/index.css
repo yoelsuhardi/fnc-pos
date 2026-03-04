@@ -454,6 +454,8 @@ body {
 /* Print Styles */
 @media print {
   @page {
+    size: 76mm auto;
+    /* explicitly configure print layout size to trigger thermal roll settings in Chrome */
     margin: 0;
   }
 
