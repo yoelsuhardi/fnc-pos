@@ -36,7 +36,7 @@ ipcMain.on('silent-print', (event) => {
         {
             silent: true,          // No print dialog
             printBackground: true, // Print background colors/styles
-            deviceName: '',        // '' = use system default printer
+            margins: { marginType: 'none' } // Use thermal printer margins
         },
         (success, errorType) => {
             if (!success) {

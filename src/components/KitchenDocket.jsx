@@ -23,7 +23,7 @@ export default function KitchenDocket() {
             // Allow DOM to repaint before printing
             const timer = setTimeout(() => {
                 triggerPrint();
-            }, 250);
+            }, 500);
             return () => clearTimeout(timer);
         }
     }, [latestPrintedOrder]);

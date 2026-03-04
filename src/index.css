@@ -459,19 +459,18 @@ body {
   }
 
   /* ── Default mode: Kitchen Docket ─────────────────── */
-  body:not(.printing-invoice) * {
-    visibility: hidden;
+  body:not(.printing-invoice) .pos-container,
+  body:not(.printing-invoice) .modal-overlay,
+  body:not(.printing-invoice) #root> :not(.kitchen-docket) {
+    display: none !important;
   }
 
   body:not(.printing-invoice) .kitchen-docket,
   body:not(.printing-invoice) .kitchen-docket * {
-    visibility: visible;
+    display: block;
   }
 
   body:not(.printing-invoice) .kitchen-docket {
-    position: absolute;
-    left: 0;
-    top: 0;
     width: 76mm;
     padding: 2mm;
     margin: 0;
@@ -543,6 +542,7 @@ body {
     display: none !important;
   }
 }
+
 /* ───────────────────────────────────────────────────────── 
    RESPONSIVE BREAKPOINTS 
    ───────────────────────────────────────────────────────── */
@@ -552,13 +552,16 @@ body {
   .cart-area {
     width: clamp(280px, 35vw, 360px);
   }
+
   .category-btn {
     padding: 16px 20px;
     font-size: 1.1rem;
   }
+
   .cart-totals {
     font-size: 1.5rem;
   }
+
   .pay-btn {
     font-size: 1.2rem;
     padding: 16px;
@@ -574,16 +577,19 @@ body {
   .menu-area {
     border-right: none;
     border-bottom: 2px solid var(--panel-border);
-    flex: 6; /* Take 60% of height initially */
+    flex: 6;
+    /* Take 60% of height initially */
   }
 
   .cart-area {
     width: 100%;
-    flex: 4; /* Cart takes lower 40% */
-    max-height: 45vh; 
+    flex: 4;
+    /* Cart takes lower 40% */
+    max-height: 45vh;
     border-left: none;
     border-top: 1px solid var(--panel-border);
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.05); /* Soft shadow indicating layer */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    /* Soft shadow indicating layer */
   }
 
   .category-bar {
@@ -605,11 +611,11 @@ body {
     min-height: 100px;
     padding: 12px;
   }
-  
+
   .menu-item-btn .name {
     font-size: 1rem;
   }
-  
+
   .menu-item-btn .price {
     font-size: 1.1rem;
   }
@@ -624,7 +630,7 @@ body {
     padding: 10px 16px;
     gap: 10px;
   }
-  
+
   .pos-header .brand {
     font-size: 1.1rem;
   }
@@ -633,7 +639,7 @@ body {
   .pos-header .clock {
     display: none;
   }
-  
+
   .menu-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 8px;
@@ -651,6 +657,7 @@ body {
     padding: 14px;
     font-size: 1.1rem;
   }
+
   .cart-totals {
     font-size: 1.3rem;
   }
@@ -661,14 +668,14 @@ body {
 /* 1. TABLET / SMALL LAPTOP (< 1024px) */
 @media screen and (max-width: 1024px) {
   .cart-area {
-    width: clamp(280px, 35vw, 360px); 
+    width: clamp(280px, 35vw, 360px);
   }
-  
+
   .category-btn {
     padding: 16px 20px;
     font-size: 1.1rem;
   }
-  
+
   .menu-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
@@ -677,20 +684,23 @@ body {
 /* 2. HYBRID / PORTRAIT TABLET (< 850px) */
 @media screen and (max-width: 850px) {
   .pos-workspace {
-    flex-direction: column; 
+    flex-direction: column;
   }
 
   .menu-area {
     border-right: none;
     border-bottom: 2px solid var(--panel-border);
-    flex: 6; /* Approx 60% of viewport */
+    flex: 6;
+    /* Approx 60% of viewport */
   }
 
   .cart-area {
     width: 100%;
-    flex: 4; /* Approx 40% of viewport */
+    flex: 4;
+    /* Approx 40% of viewport */
     border-left: none;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.05); /* Soft shadow indicating layer */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    /* Soft shadow indicating layer */
   }
 
   .category-bar {
@@ -712,9 +722,14 @@ body {
     min-height: 100px;
     padding: 12px;
   }
-  
-  .menu-item-btn .name { font-size: 1rem; }
-  .menu-item-btn .price { font-size: 1.1rem; }
+
+  .menu-item-btn .name {
+    font-size: 1rem;
+  }
+
+  .menu-item-btn .price {
+    font-size: 1.1rem;
+  }
 }
 
 /* 3. MOBILE (< 600px) */
@@ -728,13 +743,17 @@ body {
   }
 
   /* Wrap the right side buttons row if strictly necessary */
-  .pos-header > div:last-child {
+  .pos-header>div:last-child {
     flex-wrap: wrap;
     justify-content: center;
   }
 
-  .zoom-controls { display: none !important; } /* Hidden on mobile */
-  
+  .zoom-controls {
+    display: none !important;
+  }
+
+  /* Hidden on mobile */
+
   .cart-totals {
     font-size: 1.4rem;
   }
@@ -743,7 +762,7 @@ body {
     padding: 15px;
     font-size: 1.2rem;
   }
-  
+
   /* Modal resize to full screen on mobile */
   .modal-content {
     width: 95%;
@@ -753,5 +772,8 @@ body {
     overflow-y: auto;
   }
 
-  .cart-type-btn { padding: 6px 12px; font-size: 0.9rem; }
+  .cart-type-btn {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
 }
