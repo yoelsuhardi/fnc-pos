@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { usePos } from '../context/PosContext';
 import { pairTerminal, generateRegisterId } from '../services/SmartpayService';
 
 export default function SettingsModal({ onClose }) {
-    const { triggerKitchenPrint, isHolidaySurcharge, toggleHolidaySurcharge } = usePos();
+    const { triggerKitchenPrint, isHolidaySurcharge, toggleHolidaySurcharge, isQueueEnabled, toggleQueueEnabled } = usePos();
 
     // SmartConnect State
     const [pairingCode, setPairingCode] = useState('');
@@ -96,6 +96,31 @@ export default function SettingsModal({ onClose }) {
                         </h3>
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>
                             Automatically increase all menu prices by 10%. Prices in the menu grid will update instantly.
+                        </p>
+                    </div>
+
+                    {/* Queue Number Settings */}
+                    <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
+                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>🔢 Customer Queue Numbers</span>
+                            <button
+                                onClick={toggleQueueEnabled}
+                                style={{
+                                    padding: '6px 16px',
+                                    borderRadius: '20px',
+                                    fontWeight: 'bold',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    background: isQueueEnabled ? 'var(--color-success)' : '#bdc3c7',
+                                    color: 'white'
+                                }}
+                            >
+                                {isQueueEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>
+                            When active, a tear-off queue ticket will print at the bottom of the kitchen docket.
                         </p>
                     </div>
 

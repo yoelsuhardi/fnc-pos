@@ -16,10 +16,24 @@ export const PosProvider = ({ children }) => {
         return localStorage.getItem('fnc_holiday_surcharge') === 'true';
     });
 
+    const [isQueueEnabled, setIsQueueEnabled] = useState(() => {
+        // Default to true if not set
+        const val = localStorage.getItem('fnc_queue_enabled');
+        return val === null ? true : val === 'true';
+    });
+
     const toggleHolidaySurcharge = () => {
         setIsHolidaySurcharge(prev => {
             const next = !prev;
             localStorage.setItem('fnc_holiday_surcharge', next.toString());
+            return next;
+        });
+    };
+
+    const toggleQueueEnabled = () => {
+        setIsQueueEnabled(prev => {
+            const next = !prev;
+            localStorage.setItem('fnc_queue_enabled', next.toString());
             return next;
         });
     };
@@ -309,6 +323,8 @@ export const PosProvider = ({ children }) => {
             autoDiscountAmount,
             isHolidaySurcharge,
             toggleHolidaySurcharge,
+            isQueueEnabled,
+            toggleQueueEnabled,
             phoneOrders,
             savePhoneOrder,
             payPhoneOrder,
