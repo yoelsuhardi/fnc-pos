@@ -12,6 +12,7 @@ import SeasoningModal from './components/SeasoningModal';
 import CustomerInvoice from './components/CustomerInvoice';
 import DailyCloseModal from './components/DailyCloseModal';
 import OrderTypePrompt from './components/OrderTypePrompt';
+import CashTenderModal from './components/CashTenderModal';
 import { usePos } from './context/PosContext';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   const [showDailyClose, setShowDailyClose] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showEftpos, setShowEftpos] = useState(false);
+  const [showCashModal, setShowCashModal] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -106,7 +108,7 @@ function App() {
     setShowSeasoningModal(false);
 
     if (pendingAction === 'cash') {
-      processWalkInPayment(seasoning);
+      setShowCashModal(true);
     } else if (pendingAction === 'eftpos') {
       setShowEftpos(true);
     } else if (pendingAction === 'phone') {
@@ -133,7 +135,11 @@ function App() {
 
   return (
     <>
-      <div className="pos-container" style={{ zoom: zoomLevel }}>
+      <div className="pos-container" style={{
+        zoom: zoomLevel,
+        width: `${100 / zoomLevel}vw`,
+        height: `${100 / zoomLevel}vh`
+      }}>
         <Header
           zoomLevel={zoomLevel}
           onZoomIn={() => applyZoom(zoomLevel + 0.1)}
@@ -218,6 +224,17 @@ function App() {
       {showSettings && (
         <SettingsModal
           onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {showCashModal && (
+        <CashTenderModal
+          amountDue={cartTotal}
+          onSuccess={(tenderedNumeric, changeDue) => {
+            setShowCashModal(false);
+            processWalkInPayment(selectedSeasoning);
+          }}
+          onCancel={() => setShowCashModal(false)}
         />
       )}
 

@@ -102,20 +102,21 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {fishSelections.map((fish, index) => (
                                 <div key={fish.id} style={{
-                                    background: 'rgba(27, 38, 59, 0.5)',
+                                    background: '#f8fafc',
                                     padding: '16px',
                                     borderRadius: '8px',
-                                    border: '1px solid var(--panel-border)'
+                                    border: '1px solid var(--panel-border)',
+                                    boxShadow: 'var(--shadow-sm)'
                                 }}>
                                     <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>Fish #{index + 1}</div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button
                                             type="button"
                                             className={`mod-btn ${fish.modifier === null ? 'active' : ''}`}
-                                            style={{ padding: '12px', flex: 1, fontSize: '1rem' }}
+                                            style={{ padding: '12px', flex: 1, fontSize: '0.95rem' }}
                                             onClick={(e) => { e.preventDefault(); handleFishModifierChange(fish.id, null); }}
                                         >
-                                            Battered
+                                            🍳 Battered
                                         </button>
 
                                         {fishModifiers.map(mod => (
@@ -123,10 +124,10 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
                                                 key={mod.id}
                                                 type="button"
                                                 className={`mod-btn ${fish.modifier?.id === mod.id ? 'active' : ''}`}
-                                                style={{ padding: '12px', flex: 1, fontSize: '1rem' }}
+                                                style={{ padding: '12px', flex: 1, fontSize: '0.95rem' }}
                                                 onClick={(e) => { e.preventDefault(); handleFishModifierChange(fish.id, mod); }}
                                             >
-                                                {mod.name} <br />
+                                                {mod.name.includes('Grilled') ? '♨️ ' : mod.name.includes('Crumbed') ? '🍞 ' : ''}{mod.name} <br />
                                                 <small style={{ color: 'var(--color-success)' }}>+${(mod.price * priceMultiplier).toFixed(2)}</small>
                                             </button>
                                         ))}
@@ -154,10 +155,11 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        background: 'rgba(27, 38, 59, 0.5)',
+                                        background: count > 0 ? '#f0f9ff' : '#f8fafc',
                                         padding: '16px 20px',
                                         borderRadius: '8px',
-                                        border: count > 0 ? '1px solid var(--color-action)' : '1px solid var(--panel-border)'
+                                        border: count > 0 ? '1px solid var(--color-action)' : '1px solid var(--panel-border)',
+                                        boxShadow: count > 0 ? 'var(--shadow-sm)' : 'none'
                                     }}>
                                         <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{choice.name}</div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

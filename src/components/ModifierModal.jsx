@@ -58,42 +58,42 @@ export default function ModifierModal({ item, onSelect, onClose, priceMultiplier
 
                 <div style={{ flex: 1, overflowY: 'auto', marginBottom: '20px', paddingRight: '10px' }}>
                     {selections.map((sel, idx) => (
-                        <div key={idx} style={{ marginBottom: '15px', padding: '15px', background: 'var(--panel-bg)', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
-                            <div style={{ fontWeight: 'bold', marginBottom: '10px', color: 'white' }}>Fish #{idx + 1}</div>
-                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                <button
-                                    style={{
-                                        flex: 1,
-                                        padding: '10px',
-                                        borderRadius: '8px',
-                                        border: sel === null ? '2px solid var(--color-chips)' : '1px solid var(--panel-border)',
-                                        background: sel === null ? 'rgba(245, 124, 0, 0.2)' : 'transparent',
-                                        color: sel === null ? 'var(--color-chips)' : 'var(--text-main)',
-                                        cursor: 'pointer',
-                                        fontWeight: sel === null ? 'bold' : 'normal'
-                                    }}
-                                    onClick={() => handleSelectionChange(idx, null)}
-                                >
-                                    Battered (Default)
-                                </button>
-                                {fishModifiers.map(mod => (
+                        <div key={idx} style={{ marginBottom: '15px' }}>
+                            <div style={{
+                                background: '#f8fafc',
+                                padding: '16px',
+                                borderRadius: '8px',
+                                border: '1px solid var(--panel-border)',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}>
+                                <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>Fish #{idx + 1}</div>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                     <button
-                                        key={mod.id}
                                         style={{
-                                            flex: 1,
-                                            padding: '10px',
-                                            borderRadius: '8px',
-                                            border: sel?.id === mod.id ? '2px solid var(--color-chips)' : '1px solid var(--panel-border)',
-                                            background: sel?.id === mod.id ? 'rgba(245, 124, 0, 0.2)' : 'transparent',
-                                            color: sel?.id === mod.id ? 'var(--color-chips)' : 'var(--text-main)',
-                                            cursor: 'pointer',
-                                            fontWeight: sel?.id === mod.id ? 'bold' : 'normal'
+                                            flex: 1, padding: '12px', fontSize: '0.95rem',
+                                            background: selections[idx] === null ? '#e0f2fe' : 'white',
+                                            border: selections[idx] === null ? '2px solid var(--color-action)' : '1px solid var(--panel-border)',
+                                            color: 'var(--text-main)', borderRadius: '8px', cursor: 'pointer'
                                         }}
-                                        onClick={() => handleSelectionChange(idx, mod)}
+                                        onClick={() => handleSelectionChange(idx, null)}
                                     >
-                                        {mod.name} (+${(mod.price * priceMultiplier).toFixed(2)})
+                                        🍳 Battered (Default)
                                     </button>
-                                ))}
+                                    {fishModifiers.map(mod => (
+                                        <button
+                                            key={mod.id}
+                                            style={{
+                                                flex: 1, padding: '12px', fontSize: '0.95rem',
+                                                background: selections[idx]?.id === mod.id ? '#e0f2fe' : 'white',
+                                                border: selections[idx]?.id === mod.id ? '2px solid var(--color-action)' : '1px solid var(--panel-border)',
+                                                color: 'var(--text-main)', borderRadius: '8px', cursor: 'pointer'
+                                            }}
+                                            onClick={() => handleSelectionChange(idx, mod)}
+                                        >
+                                            {mod.name.includes('Grilled') ? '♨️ ' : mod.name.includes('Crumbed') ? '🍞 ' : ''}{mod.name} (+${(mod.price * priceMultiplier).toFixed(2)})
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     ))}

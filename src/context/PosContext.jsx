@@ -7,6 +7,7 @@ export const usePos = () => useContext(PosContext);
 export const PosProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [orderType, setOrderType] = useState('walk-in');
+    const [isOrderStarted, setIsOrderStarted] = useState(false);
     const [phoneOrders, setPhoneOrders] = useState([]);
     const [orderNote, setOrderNote] = useState('');
     const [discount, setDiscount] = useState({ type: 'none', value: 0 }); // type: 'none' | 'amount' | 'percent'
@@ -150,6 +151,7 @@ export const PosProvider = ({ children }) => {
         setCart([]);
         setOrderNote('');
         setDiscount({ type: 'none', value: 0 });
+        setIsOrderStarted(false);
     };
 
     const cartSubtotal = useMemo(() => {
@@ -158,14 +160,36 @@ export const PosProvider = ({ children }) => {
 
     // Computed discount amount
     const discountAmount = useMemo(() => {
-        if (discount.type === 'amount') return Math.min(discount.value, cartSubtotal);
-        if (discount.type === 'percent') return Math.round((cartSubtotal * discount.value / 100) * 100) / 100;
-        return 0;
+        let manualDiscount = 0;
+        if (discount.type === 'amount') manualDiscount = Math.min(discount.value, cartSubtotal);
+        if (discount.type === 'percent') manualDiscount = Math.round((cartSubtotal * discount.value / 100) * 100) / 100;
+        return manualDiscount;
     }, [discount, cartSubtotal]);
 
+    const autoDiscountAmount = useMemo(() => {
+        if (new Date().getDay() !== 2) return 0; // Only applies on Tuesday
+
+        // Accumulate quantities for specific discounted items
+        let familyQty = 0;
+        let halfFamilyQty = 0;
+        let fishOfTheDayQty = 0;
+
+        cart.forEach(item => {
+            if (item.id === 'sp_1') familyQty += item.qty;
+            if (item.id === 'sp_2') halfFamilyQty += item.qty;
+            if (item.name === 'Fish of the Day' || item.id === 'f_1') fishOfTheDayQty += item.qty;
+        });
+
+        const familyDiscount = familyQty * 11.80;
+        const halfFamilyDiscount = halfFamilyQty * 5.90;
+        const fishDiscount = Math.floor(fishOfTheDayQty / 2) * 8.50; // Every 2 gets 8.50 off
+
+        return parseFloat((familyDiscount + halfFamilyDiscount + fishDiscount).toFixed(2));
+    }, [cart]);
+
     const cartTotal = useMemo(() => {
-        return Math.max(0, cartSubtotal - discountAmount);
-    }, [cartSubtotal, discountAmount]);
+        return Math.max(0, cartSubtotal - discountAmount - autoDiscountAmount);
+    }, [cartSubtotal, discountAmount, autoDiscountAmount]);
 
     // Daily stats derived from paidOrders
     const dailyStats = useMemo(() => {
@@ -195,13 +219,17 @@ export const PosProvider = ({ children }) => {
     }, [paidOrders]);
 
     const savePhoneOrder = (customerName, seasoning = null) => {
+        const finalDiscountLine = discountAmount > 0 || autoDiscountAmount > 0
+            ? { type: 'mixed', value: 'auto', amount: discountAmount + autoDiscountAmount }
+            : null;
+
         const stampedItems = cart.map(item => ({ ...item, seasoning }));
         const newOrder = {
             id: getNextOrderId(),
             customerName,
             seasoning,
             note: orderNote || null,
-            discount: discountAmount > 0 ? { type: discount.type, value: discount.value, amount: discountAmount } : null,
+            discount: finalDiscountLine,
             items: stampedItems,
             subtotal: cartSubtotal,
             total: cartTotal,
@@ -225,13 +253,17 @@ export const PosProvider = ({ children }) => {
     };
 
     const processWalkInPayment = (seasoning = null, method = 'cash') => {
+        const finalDiscountLine = discountAmount > 0 || autoDiscountAmount > 0
+            ? { type: 'mixed', value: 'auto', amount: discountAmount + autoDiscountAmount }
+            : null;
+
         const stampedItems = cart.map(item => ({ ...item, seasoning }));
         const newOrder = {
             id: getNextOrderId(),
             customerName: 'Walk-in',
             seasoning,
             note: orderNote || null,
-            discount: discountAmount > 0 ? { type: discount.type, value: discount.value, amount: discountAmount } : null,
+            discount: finalDiscountLine,
             items: stampedItems,
             subtotal: cartSubtotal,
             total: cartTotal,
@@ -267,11 +299,14 @@ export const PosProvider = ({ children }) => {
             cartTotal,
             orderType,
             setOrderType,
+            isOrderStarted,
+            setIsOrderStarted,
             orderNote,
             setOrderNote,
             discount,
             setDiscount,
             discountAmount,
+            autoDiscountAmount,
             isHolidaySurcharge,
             toggleHolidaySurcharge,
             phoneOrders,

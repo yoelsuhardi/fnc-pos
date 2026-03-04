@@ -19,7 +19,7 @@ export default function Header({ openPhoneQueue, openTransactions, openDailyClos
                 >
                     ⚙️
                 </button>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', background: 'var(--panel-border)', padding: '4px 12px', borderRadius: '8px' }}>
+                <div className="zoom-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '10px', background: 'var(--panel-border)', padding: '4px 12px', borderRadius: '8px' }}>
                     <button onClick={onZoomOut} title="Zoom out (Ctrl+-)" style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px' }}>🔍-</button>
                     <span
                         onClick={onZoomReset}
