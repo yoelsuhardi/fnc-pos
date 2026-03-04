@@ -21,6 +21,7 @@ export const pairTerminal = async (pairingCode, businessName, vendorName, isTest
 
     const payload = new URLSearchParams();
     payload.append('POSRegisterID', registerId);
+    payload.append('POSRegisterName', 'Main Register');
     payload.append('POSBusinessName', businessName || 'FNC POS');
     payload.append('POSVendorName', vendorName || 'FNC POS System');
 
@@ -54,6 +55,7 @@ export const initiateTransaction = async (amountTotal, transactionType = 'Card.P
 
     const payload = new URLSearchParams();
     payload.append('POSRegisterID', registerId);
+    payload.append('POSRegisterName', 'Main Register');
     payload.append('POSBusinessName', 'FNC POS'); // Hardcoded fallback
     payload.append('POSVendorName', 'FNC POS System');
     payload.append('TransactionType', transactionType);
