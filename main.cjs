@@ -28,13 +28,13 @@ function createWindow() {
 
 // ─── Silent Print IPC handler ─────────────────────────────────────────────────
 // Called from KitchenDocket.jsx via ipcRenderer.send('silent-print')
-ipcMain.on('silent-print', (event) => {
+ipcMain.on('silent-print', (event, isPreview = false) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return;
 
     win.webContents.print(
         {
-            silent: true,          // No print dialog
+            silent: !isPreview,  // Dialog shown only if isPreview is true
             printBackground: true, // Print background colors/styles
             margins: { marginType: 'none' } // Use thermal printer margins
         },

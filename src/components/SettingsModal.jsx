@@ -3,7 +3,15 @@ import { usePos } from '../context/PosContext';
 import { pairTerminal, generateRegisterId } from '../services/SmartpayService';
 
 export default function SettingsModal({ onClose }) {
-    const { triggerKitchenPrint, isHolidaySurcharge, toggleHolidaySurcharge, isQueueEnabled, toggleQueueEnabled } = usePos();
+    const {
+        triggerKitchenPrint,
+        isHolidaySurcharge,
+        toggleHolidaySurcharge,
+        isQueueEnabled,
+        toggleQueueEnabled,
+        isPreviewEnabled,
+        togglePreviewEnabled
+    } = usePos();
 
     // SmartConnect State
     const [pairingCode, setPairingCode] = useState('');
@@ -67,12 +75,12 @@ export default function SettingsModal({ onClose }) {
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content" style={{ maxWidth: '500px', width: '90%' }}>
-                <h2 className="modal-title" style={{ borderBottom: '1px solid var(--panel-border)', paddingBottom: '10px', marginBottom: '20px' }}>
+            <div className="modal-content" style={{ maxWidth: '500px', width: '90%', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+                <h2 className="modal-title" style={{ borderBottom: '1px solid var(--panel-border)', paddingBottom: '10px', marginBottom: '20px', flexShrink: 0 }}>
                     ⚙️ Terminal Settings
                 </h2>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="settings-scroll-area" style={{ display: 'flex', flexDirection: 'column', gap: '20px', overflowY: 'auto', paddingRight: '10px', flex: 1, paddingBottom: '20px' }}>
 
                     {/* Public Holiday Surcharge Settings */}
                     <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
@@ -121,6 +129,31 @@ export default function SettingsModal({ onClose }) {
                         </h3>
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>
                             When active, a tear-off queue ticket will print at the bottom of the kitchen docket.
+                        </p>
+                    </div>
+
+                    {/* Print Preview Settings */}
+                    <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
+                        <h3 style={{ marginBottom: '10px', color: 'var(--text-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>👁️ Print Preview (Dialog)</span>
+                            <button
+                                onClick={togglePreviewEnabled}
+                                style={{
+                                    padding: '6px 16px',
+                                    borderRadius: '20px',
+                                    fontWeight: 'bold',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    background: isPreviewEnabled ? 'var(--color-success)' : '#bdc3c7',
+                                    color: 'white'
+                                }}
+                            >
+                                {isPreviewEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>
+                            When active, a system print dialog will appear allowing you to preview the docket before printing. Turn OFF for fast, silent printing.
                         </p>
                     </div>
 
@@ -203,18 +236,20 @@ export default function SettingsModal({ onClose }) {
                         {pairingStatus && (
                             <div style={{
                                 marginTop: '15px', padding: '10px', borderRadius: '4px', fontSize: '0.85rem', textAlign: 'center',
-                                background: pairingStatus.type === 'success' ? 'rgba(76,175,80,0.1)' : pairingStatus.type === 'error' ? 'rgba(244,67,54,0.1)' : '#f1f2f6',
-                                color: pairingStatus.type === 'success' ? 'var(--color-success)' : pairingStatus.type === 'error' ? '#f44336' : 'var(--text-main)'
+                                background: pairingStatus.type === 'error' ? '#ffebee' : pairingStatus.type === 'success' ? '#e8f5e9' : '#e3f2fd',
+                                color: pairingStatus.type === 'error' ? '#c62828' : pairingStatus.type === 'success' ? '#2e7d32' : '#1565c0',
+                                border: `1px solid ${pairingStatus.type === 'error' ? '#ffcdd2' : pairingStatus.type === 'success' ? '#c8e6c9' : '#bbdefb'}`
                             }}>
                                 {pairingStatus.msg}
                             </div>
                         )}
                     </div>
-
                 </div>
 
-                <div className="modal-actions" style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--panel-border)' }}>
-                    <button className="cancel-btn" style={{ width: '100%' }} onClick={onClose}>Close Settings</button>
+                <div className="modal-actions" style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--panel-border)', flexShrink: 0 }}>
+                    <button className="btn-secondary" onClick={onClose} style={{ width: '100%', padding: '15px', fontSize: '1.2rem' }}>
+                        Close Settings
+                    </button>
                 </div>
             </div>
         </div>
