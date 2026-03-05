@@ -4,25 +4,54 @@ import { usePos } from '../context/PosContext';
 // Detect Electron for silent print
 const isElectron = typeof window !== 'undefined' && window.process?.type === 'renderer';
 
-const triggerSilentPrint = () => {
+const triggerSilentPrint = (printerName = '') => {
     if (isElectron) {
         const { ipcRenderer } = window.require('electron');
-        ipcRenderer.send('silent-print');
+        ipcRenderer.send('silent-print', { isPreview: false, printerName });
     } else {
         window.print();
     }
 };
 
 export default function DailyCloseModal({ onClose }) {
-    const { dailyStats, paidOrders } = usePos();
+    const { dailyStats, paidOrders, selectedPrinter, orderFrequencies } = usePos();
+    const isElectronEnv = typeof window !== 'undefined' && window.process?.type === 'renderer';
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-AU', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 
     const handlePrint = () => {
         document.body.classList.add('printing-daily-close');
-        triggerSilentPrint();
+        triggerSilentPrint(selectedPrinter);
         setTimeout(() => document.body.classList.remove('printing-daily-close'), 2000);
+    };
+
+    const handleExport = async () => {
+        const backup = {
+            exportedAt: new Date().toISOString(),
+            paidOrders,
+            orderFrequencies,
+            dailyStats,
+        };
+        const jsonData = JSON.stringify(backup, null, 2);
+        if (isElectronEnv) {
+            const { ipcRenderer } = window.require('electron');
+            const result = await ipcRenderer.invoke('export-backup', jsonData);
+            if (result.success) {
+                alert(`✅ Backup saved to:\n${result.filePath}`);
+            } else if (result.error) {
+                alert(`❌ Export failed: ${result.error}`);
+            }
+        } else {
+            // Browser fallback — download as file
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fnc-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
     };
 
     return (
@@ -85,6 +114,12 @@ export default function DailyCloseModal({ onClose }) {
 
                     <div className="modal-actions" style={{ marginTop: '20px' }}>
                         <button className="btn-secondary" onClick={onClose}>Close</button>
+                        <button
+                            onClick={handleExport}
+                            style={{ padding: '10px 18px', background: 'var(--color-action)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                        >
+                            💾 Export Backup
+                        </button>
                         <button className="btn-primary" onClick={handlePrint} disabled={paidOrders.length === 0}>🖨️ Print Report</button>
                     </div>
                 </div>

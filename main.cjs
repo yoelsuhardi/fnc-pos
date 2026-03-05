@@ -1,5 +1,6 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -33,6 +34,23 @@ ipcMain.handle('get-printers', async (event) => {
     } catch (err) {
         console.error('Failed to get printers:', err);
         return [];
+    }
+});
+
+ipcMain.handle('export-backup', async (event, jsonData) => {
+    const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const { filePath, canceled } = await dialog.showSaveDialog({
+        title: 'Export FNC POS Backup',
+        defaultPath: `fnc-backup-${date}.json`,
+        filters: [{ name: 'JSON Backup', extensions: ['json'] }]
+    });
+    if (canceled || !filePath) return { success: false };
+    try {
+        fs.writeFileSync(filePath, jsonData, 'utf-8');
+        return { success: true, filePath };
+    } catch (err) {
+        console.error('Backup export failed:', err);
+        return { success: false, error: err.message };
     }
 });
 

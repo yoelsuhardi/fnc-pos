@@ -213,6 +213,16 @@ export const PosProvider = ({ children }) => {
         setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
     };
 
+    const updateCartQty = (cartItemId, newQty) => {
+        if (newQty <= 0) {
+            removeFromCart(cartItemId);
+        } else {
+            setCart(prev => prev.map(item =>
+                item.cartItemId === cartItemId ? { ...item, qty: newQty } : item
+            ));
+        }
+    };
+
     const clearCart = () => {
         setCart([]);
         setOrderNote('');
@@ -360,6 +370,7 @@ export const PosProvider = ({ children }) => {
             cart,
             addToCart,
             removeFromCart,
+            updateCartQty,
             clearCart,
             cartSubtotal,
             cartTotal,
