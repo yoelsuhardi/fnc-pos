@@ -71,12 +71,12 @@ ipcMain.on('silent-print', (event, payload) => {
 
     const printOptions = {
         silent: !isPreview,  // Dialog shown only if isPreview is true
-        printBackground: true, // Print background colors/styles
-        margins: { marginType: 'none' } // Use thermal printer margins
+        printBackground: true // Print background colors/styles
     };
 
-    if (!isPreview && printerName) {
-        printOptions.deviceName = printerName;
+    if (!isPreview) {
+        printOptions.margins = { marginType: 'none' };
+        if (printerName) printOptions.deviceName = printerName;
     }
 
     win.webContents.print(

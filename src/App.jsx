@@ -80,16 +80,20 @@ function App() {
   const [selectedSeasoning, setSelectedSeasoning] = useState(null);
 
   // Print customer invoice from current cart
-  const handlePrintInvoice = () => {
-    const previewOrder = {
-      id: 'INVOICE',
-      customerName: null,
-      items: [...cart],
-      total: cartTotal,
-      time: new Date().toISOString(),
-      seasoning: null
-    };
-    setInvoiceOrder(previewOrder);
+  const handlePrintInvoice = (existingOrder = null) => {
+    if (existingOrder && existingOrder.id) {
+      setInvoiceOrder(existingOrder);
+    } else {
+      const previewOrder = {
+        id: 'INVOICE',
+        customerName: null,
+        items: [...cart],
+        total: cartTotal,
+        time: new Date().toISOString(),
+        seasoning: null
+      };
+      setInvoiceOrder(previewOrder);
+    }
     setShowInvoice(true);
   };
 
@@ -212,12 +216,14 @@ function App() {
       {showQueueModal && (
         <PaymentQueueModal
           onClose={() => setShowQueueModal(false)}
+          onPrintReceipt={handlePrintInvoice}
         />
       )}
 
       {showTransactionsModal && (
         <TransactionsModal
           onClose={() => setShowTransactionsModal(false)}
+          onPrintReceipt={handlePrintInvoice}
         />
       )}
 

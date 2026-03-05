@@ -1,29 +1,27 @@
 import React, { useEffect } from 'react';
 import { usePos } from '../context/PosContext';
 
-// Detect if running inside Electron
 const isElectron = typeof window !== 'undefined' && window.process?.type === 'renderer';
 
-const triggerInvoicePrint = () => {
-    // Add body class so CSS knows to show invoice, not kitchen docket
-    document.body.classList.add('printing-invoice');
-
-    if (isElectron) {
-        const { ipcRenderer } = window.require('electron');
-        ipcRenderer.send('silent-print');
-        // Remove class after a short delay to restore normal print mode
-        setTimeout(() => document.body.classList.remove('printing-invoice'), 2000);
-    } else {
-        window.print();
-        document.body.classList.remove('printing-invoice');
-    }
-};
-
 export default function CustomerInvoice({ order, onClose }) {
+    const { isPreviewEnabled, selectedPrinter } = usePos();
+
+    const triggerInvoicePrint = () => {
+        document.body.classList.add('printing-invoice');
+        if (isElectron) {
+            const { ipcRenderer } = window.require('electron');
+            ipcRenderer.send('silent-print', { isPreview: isPreviewEnabled, printerName: selectedPrinter });
+            setTimeout(() => document.body.classList.remove('printing-invoice'), 2000);
+        } else {
+            window.print();
+            document.body.classList.remove('printing-invoice');
+        }
+    };
+
     useEffect(() => {
         const timer = setTimeout(() => {
             triggerInvoicePrint();
-        }, 300);
+        }, isPreviewEnabled ? 900 : 300);
         return () => clearTimeout(timer);
     }, []);
 

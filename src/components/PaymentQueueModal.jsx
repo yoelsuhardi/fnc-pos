@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { usePos } from '../context/PosContext';
 import EftposModal from './EftposModal';
 
-export default function PaymentQueueModal({ onClose }) {
-    const { phoneOrders, payPhoneOrder } = usePos();
+export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
+    const { phoneOrders, payPhoneOrder, triggerKitchenPrint } = usePos();
     const [payingOrder, setPayingOrder] = useState(null);
 
     const handleEftposSuccess = () => {
@@ -43,13 +43,29 @@ export default function PaymentQueueModal({ onClose }) {
                                     <div style={{ fontWeight: '800', fontSize: '1.3rem', color: '#a3b18a' }}>
                                         ${order.total.toFixed(2)}
                                     </div>
-                                    <button
-                                        className="pay-btn"
-                                        style={{ padding: '12px 24px', fontSize: '1.1rem', width: 'auto' }}
-                                        onClick={() => setPayingOrder(order)}
-                                    >
-                                        Pay
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            style={{ padding: '8px 12px', fontSize: '1rem', background: 'var(--color-specials)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                            onClick={() => triggerKitchenPrint(order)}
+                                            title="Reprint Kitchen Docket"
+                                        >
+                                            🖨️
+                                        </button>
+                                        <button
+                                            style={{ padding: '8px 12px', fontSize: '1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                            onClick={() => onPrintReceipt && onPrintReceipt(order)}
+                                            title="Print Customer Receipt"
+                                        >
+                                            🧾
+                                        </button>
+                                        <button
+                                            className="pay-btn"
+                                            style={{ padding: '8px 20px', fontSize: '1rem', width: 'auto' }}
+                                            onClick={() => setPayingOrder(order)}
+                                        >
+                                            Pay
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}

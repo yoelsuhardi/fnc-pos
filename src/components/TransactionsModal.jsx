@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { usePos } from '../context/PosContext';
 
-export default function TransactionsModal({ onClose }) {
+export default function TransactionsModal({ onClose, onPrintReceipt }) {
     const { paidOrders, triggerKitchenPrint, voidOrder } = usePos();
     const [confirmVoidId, setConfirmVoidId] = useState(null);
 
@@ -63,9 +63,16 @@ export default function TransactionsModal({ onClose }) {
                                 <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                                     <button
                                         style={{ flex: 1, padding: '7px', borderRadius: '6px', background: 'var(--color-specials)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}
-                                        onClick={() => triggerKitchenPrint(order, true)}
+                                        onClick={() => triggerKitchenPrint(order)}
                                     >
                                         🖨️ Reprint Docket
+                                    </button>
+
+                                    <button
+                                        style={{ flex: 1, padding: '7px', borderRadius: '6px', background: '#3b82f6', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}
+                                        onClick={() => onPrintReceipt && onPrintReceipt(order)}
+                                    >
+                                        🧾 Print Receipt
                                     </button>
 
                                     {confirmVoidId === order.id ? (
