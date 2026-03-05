@@ -218,7 +218,9 @@ export const PosProvider = ({ children }) => {
             removeFromCart(cartItemId);
         } else {
             setCart(prev => prev.map(item =>
-                item.cartItemId === cartItemId ? { ...item, qty: newQty } : item
+                item.cartItemId === cartItemId
+                    ? { ...item, qty: newQty, price: (item.unitPrice ?? item.price) * newQty }
+                    : item
             ));
         }
     };

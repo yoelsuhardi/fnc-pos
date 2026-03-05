@@ -84,9 +84,9 @@ export const menuItems = [
   { id: 's_14', categoryId: 'sides', name: 'Chicko Roll', price: 5.00 },
   { id: 's_15', categoryId: 'sides', name: 'Cornjack', price: 5.00 },
   { id: 's_16', categoryId: 'sides', name: 'Fish Cake', price: 5.00 },
-  { id: 's_17', categoryId: 'sides', name: 'Cheese Sausage', price: 5.00 },
-  { id: 's_18', categoryId: 'sides', name: 'Beef Sausage', price: 5.00 },
-  { id: 's_19', categoryId: 'sides', name: 'Battered Frank', price: 5.00 },
+  { id: 's_17', categoryId: 'sides', name: 'Cheese Sausage', price: 5.00, hasModifiers: true, modifierType: 'sausage' },
+  { id: 's_18', categoryId: 'sides', name: 'Beef Sausage', price: 5.00, hasModifiers: true, modifierType: 'sausage' },
+  { id: 's_19', categoryId: 'sides', name: 'Battered Frank', price: 5.00, hasModifiers: true, modifierType: 'sausage' },
   { id: 's_20', categoryId: 'sides', name: 'Hamburger Patty', price: 7.00 },
   { id: 's_22', categoryId: 'sides', name: 'Hash Brown', price: 3.00 },
   { id: 's_23', categoryId: 'sides', name: 'Onion Rings (6)', price: 6.00 },
@@ -99,6 +99,10 @@ export const menuItems = [
 export const fishModifiers = [
   { id: 'mod_1', name: 'Grilled', price: 2.50 },
   { id: 'mod_2', name: 'Crumbed', price: 1.50 },
+];
+
+export const sausageModifiers = [
+  { id: 'smod_1', name: 'Grilled', price: 0.00 },
 ];
 
 export const specialSideChoices = [

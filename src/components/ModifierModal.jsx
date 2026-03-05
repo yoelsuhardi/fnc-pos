@@ -1,39 +1,33 @@
 import React, { useState } from 'react';
-import { fishModifiers } from '../data/menu';
+import { fishModifiers, sausageModifiers } from '../data/menu';
 
 export default function ModifierModal({ item, onSelect, onClose, priceMultiplier = 1 }) {
     const [quantity, setQuantity] = useState(1);
-    // Track selected modifiers for each fish: null = Battered (default)
     const [selections, setSelections] = useState([null]);
 
     if (!item) return null;
+
+    const isSausage = item.modifierType === 'sausage';
+    const modifiers = isSausage ? sausageModifiers : fishModifiers;
 
     const handleQuantityChange = (delta) => {
         const newQty = Math.max(1, quantity + delta);
         setQuantity(newQty);
         setSelections(prev => {
-            if (newQty > prev.length) {
-                // Add default nulls for new items
-                return [...prev, ...Array.from({ length: newQty - prev.length }, () => null)];
-            } else if (newQty < prev.length) {
-                // Trim array
-                return prev.slice(0, newQty);
-            }
+            if (newQty > prev.length) return [...prev, ...Array.from({ length: newQty - prev.length }, () => null)];
+            if (newQty < prev.length) return prev.slice(0, newQty);
             return prev;
         });
     };
 
     const handleSelectionChange = (index, modifier) => {
-        setSelections(prev => {
-            const next = [...prev];
-            next[index] = modifier;
-            return next;
-        });
+        setSelections(prev => { const next = [...prev]; next[index] = modifier; return next; });
     };
 
-    const handleSave = () => {
-        onSelect(item, selections);
-    };
+    const handleSave = () => { onSelect(item, selections); };
+
+    const rowLabel = (idx) => isSausage ? `Sausage #${idx + 1}` : `Fish #${idx + 1}`;
+    const defaultLabel = isSausage ? '🍳 Battered (Default)' : '🍳 Battered (Default)';
 
     return (
         <div className="modal-overlay">
@@ -60,14 +54,12 @@ export default function ModifierModal({ item, onSelect, onClose, priceMultiplier
                     {selections.map((sel, idx) => (
                         <div key={idx} style={{ marginBottom: '15px' }}>
                             <div style={{
-                                background: '#f8fafc',
-                                padding: '16px',
-                                borderRadius: '8px',
-                                border: '1px solid var(--panel-border)',
-                                boxShadow: 'var(--shadow-sm)'
+                                background: '#f8fafc', padding: '16px', borderRadius: '8px',
+                                border: '1px solid var(--panel-border)', boxShadow: 'var(--shadow-sm)'
                             }}>
-                                <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>Fish #{idx + 1}</div>
+                                <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>{rowLabel(idx)}</div>
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                    {/* Default: Battered (always first option) */}
                                     <button
                                         style={{
                                             flex: 1, padding: '12px', fontSize: '0.95rem',
@@ -77,9 +69,9 @@ export default function ModifierModal({ item, onSelect, onClose, priceMultiplier
                                         }}
                                         onClick={() => handleSelectionChange(idx, null)}
                                     >
-                                        🍳 Battered (Default)
+                                        {defaultLabel}
                                     </button>
-                                    {fishModifiers.map(mod => (
+                                    {modifiers.map(mod => (
                                         <button
                                             key={mod.id}
                                             style={{
@@ -90,7 +82,8 @@ export default function ModifierModal({ item, onSelect, onClose, priceMultiplier
                                             }}
                                             onClick={() => handleSelectionChange(idx, mod)}
                                         >
-                                            {mod.name.includes('Grilled') ? '♨️ ' : mod.name.includes('Crumbed') ? '🍞 ' : ''}{mod.name} (+${(mod.price * priceMultiplier).toFixed(2)})
+                                            {mod.name.includes('Grilled') ? '♨️ ' : mod.name.includes('Crumbed') ? '🍞 ' : ''}
+                                            {mod.name}{mod.price > 0 ? ` (+$${(mod.price * priceMultiplier).toFixed(2)})` : ''}
                                         </button>
                                     ))}
                                 </div>
