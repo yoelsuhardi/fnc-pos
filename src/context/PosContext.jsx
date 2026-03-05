@@ -30,6 +30,37 @@ export const PosProvider = ({ children }) => {
         return localStorage.getItem('fnc_selected_printer') || '';
     });
 
+    const defaultDocketSettings = {
+        paddingH: 4,        // mm horizontal padding
+        paddingV: 2,        // mm vertical (bottom) padding
+        itemFontSize: 16,   // pt - item name/qty
+        metaFontSize: 11,   // pt - header metadata (Order ID, Time, etc)
+        totalFontSize: 18,  // pt - TOTAL line
+        queueFontSize: 48,  // pt - queue number
+        lineSpacing: 12,    // px - margin between items
+        paperWidth: 68,     // mm
+    };
+
+    const [docketSettings, setDocketSettingsState] = useState(() => {
+        try {
+            const saved = localStorage.getItem('fnc_docket_settings');
+            return saved ? { ...defaultDocketSettings, ...JSON.parse(saved) } : defaultDocketSettings;
+        } catch { return defaultDocketSettings; }
+    });
+
+    const setDocketSettings = (newSettings) => {
+        setDocketSettingsState(prev => {
+            const next = { ...prev, ...newSettings };
+            localStorage.setItem('fnc_docket_settings', JSON.stringify(next));
+            return next;
+        });
+    };
+
+    const resetDocketSettings = () => {
+        setDocketSettingsState(defaultDocketSettings);
+        localStorage.setItem('fnc_docket_settings', JSON.stringify(defaultDocketSettings));
+    };
+
     const toggleHolidaySurcharge = () => {
         setIsHolidaySurcharge(prev => {
             const next = !prev;
@@ -350,6 +381,9 @@ export const PosProvider = ({ children }) => {
             togglePreviewEnabled,
             selectedPrinter,
             setPrinter,
+            docketSettings,
+            setDocketSettings,
+            resetDocketSettings,
             phoneOrders,
             savePhoneOrder,
             payPhoneOrder,

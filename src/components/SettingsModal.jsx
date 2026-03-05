@@ -12,8 +12,13 @@ export default function SettingsModal({ onClose }) {
         isPreviewEnabled,
         togglePreviewEnabled,
         selectedPrinter,
-        setPrinter
+        setPrinter,
+        docketSettings,
+        setDocketSettings,
+        resetDocketSettings,
     } = usePos();
+
+    const ds = docketSettings || {};
 
     // SmartConnect State
     const [pairingCode, setPairingCode] = useState('');
@@ -167,6 +172,99 @@ export default function SettingsModal({ onClose }) {
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>
                             When active, a system print dialog will appear allowing you to preview the docket before printing. Turn OFF for fast, silent printing.
                         </p>
+                    </div>
+
+                    {/* Docket Layout Settings */}
+                    <div style={{ background: 'var(--panel-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--panel-border)' }}>
+                        <h3 style={{ marginBottom: '4px', color: 'var(--text-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>📏 Docket Layout</span>
+                            <button
+                                onClick={resetDocketSettings}
+                                style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', background: '#bdc3c7', color: 'white', border: 'none', cursor: 'pointer' }}
+                            >
+                                Reset Defaults
+                            </button>
+                        </h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '16px' }}>
+                            Customize how items appear on the printed kitchen docket.
+                        </p>
+
+                        {/* Two-column: Controls left, Preview right */}
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+
+                            {/* Controls */}
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+                                {[
+                                    { key: 'paperWidth', label: 'Paper Width', unit: 'mm', min: 48, max: 80, step: 1 },
+                                    { key: 'paddingH', label: 'Side Padding', unit: 'mm', min: 0, max: 12, step: 1 },
+                                    { key: 'paddingV', label: 'Bottom Padding', unit: 'mm', min: 0, max: 10, step: 1 },
+                                    { key: 'itemFontSize', label: 'Item Font', unit: 'pt', min: 8, max: 28, step: 1 },
+                                    { key: 'metaFontSize', label: 'Meta Font', unit: 'pt', min: 7, max: 18, step: 1 },
+                                    { key: 'totalFontSize', label: 'Total Font', unit: 'pt', min: 10, max: 30, step: 1 },
+                                    { key: 'queueFontSize', label: 'Queue Number', unit: 'pt', min: 24, max: 80, step: 2 },
+                                    { key: 'lineSpacing', label: 'Line Spacing', unit: 'px', min: 4, max: 32, step: 2 },
+                                ].map(({ key, label, unit, min, max, step }) => (
+                                    <div key={key}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '3px' }}>
+                                            <span style={{ color: 'var(--text-muted)' }}>{label}</span>
+                                            <span style={{ fontWeight: 'bold', color: 'var(--color-action)' }}>{ds[key] ?? 0}{unit}</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min={min} max={max} step={step}
+                                            value={ds[key] ?? min}
+                                            onChange={e => setDocketSettings({ [key]: Number(e.target.value) })}
+                                            style={{ width: '100%', accentColor: 'var(--color-action)', cursor: 'pointer' }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Live Preview */}
+                            <div style={{
+                                flex: '0 0 140px',
+                                background: 'white',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                boxShadow: '2px 2px 8px rgba(0,0,0,0.12)',
+                                overflow: 'hidden',
+                                fontFamily: 'monospace',
+                                color: '#111',
+                                fontSize: `${(ds.metaFontSize || 11) * 0.7}px`,
+                                position: 'sticky',
+                                top: 0,
+                            }}>
+                                {/* Paper top edge */}
+                                <div style={{ background: '#e8e8e8', textAlign: 'center', fontSize: '9px', color: '#999', padding: '2px', letterSpacing: '1px' }}>80mm ROLL</div>
+                                <div style={{ padding: `0 ${Math.min((ds.paddingH || 4) * 2, 12)}px ${(ds.paddingV || 2) * 1.5}px` }}>
+                                    {/* Header */}
+                                    <div style={{ textAlign: 'center', borderBottom: '1px dashed #555', paddingBottom: '4px', marginBottom: '6px' }}>
+                                        <div style={{ fontWeight: 'bold', fontSize: `${(ds.metaFontSize || 11) * 1.2 * 0.7}px` }}>KITCHEN DOCKET</div>
+                                        <div>Order: #42</div>
+                                        <div>Walk-in</div>
+                                        <div>SEASONING: CS</div>
+                                    </div>
+                                    {/* Items */}
+                                    <div style={{ marginBottom: `${(ds.lineSpacing || 12) * 0.5}px`, borderBottom: '1px solid #ddd', paddingBottom: '2px' }}>
+                                        <div style={{ fontWeight: 'bold', fontSize: `${(ds.itemFontSize || 16) * 0.7}px` }}>2 H</div>
+                                        <div style={{ fontWeight: 'bold', fontSize: `${(ds.itemFontSize || 16) * 0.7}px` }}>1600</div>
+                                    </div>
+                                    <div style={{ marginBottom: `${(ds.lineSpacing || 12) * 0.5}px`, borderBottom: '1px solid #ddd', paddingBottom: '2px' }}>
+                                        <div style={{ fontWeight: 'bold', fontSize: `${(ds.itemFontSize || 16) * 0.7}px` }}>1 D/S</div>
+                                    </div>
+                                    {/* Total */}
+                                    <div style={{ borderTop: '1px dashed #555', paddingTop: '4px', textAlign: 'right', fontWeight: 'bold', fontSize: `${(ds.totalFontSize || 18) * 0.7}px` }}>
+                                        TOTAL: $37.00
+                                    </div>
+                                    {/* Queue */}
+                                    <div style={{ borderTop: '1px dashed #555', marginTop: '8px', paddingTop: '6px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '7px' }}>✂️ ----------</div>
+                                        <div style={{ fontSize: `${(ds.queueFontSize || 48) * 0.7 * 0.3}px`, fontWeight: '900', lineHeight: 1.1 }}>42</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Thermal Printer Settings */}

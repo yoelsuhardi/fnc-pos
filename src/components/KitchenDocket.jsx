@@ -16,7 +16,7 @@ const triggerPrint = (isPreviewEnabled, selectedPrinter) => {
 };
 
 export default function KitchenDocket() {
-    const { latestPrintedOrder, isQueueEnabled, isPreviewEnabled, selectedPrinter } = usePos();
+    const { latestPrintedOrder, isQueueEnabled, isPreviewEnabled, selectedPrinter, docketSettings } = usePos();
 
     useEffect(() => {
         if (latestPrintedOrder) {
@@ -153,8 +153,15 @@ export default function KitchenDocket() {
         return subs;
     };
 
+    const ds = docketSettings || {};
+    const docketStyle = {
+        width: `${ds.paperWidth || 68}mm`,
+        padding: `0 ${ds.paddingH || 4}mm ${ds.paddingV || 2}mm ${ds.paddingH || 4}mm`,
+        fontSize: `${ds.metaFontSize || 11}pt`,
+    };
+
     return (
-        <div className="kitchen-docket">
+        <div className="kitchen-docket" style={docketStyle}>
             <div className="docket-header">
                 <h1 className="docket-title">KITCHEN DOCKET</h1>
                 <div className="docket-meta">Order: {latestPrintedOrder.id}</div>
@@ -165,7 +172,7 @@ export default function KitchenDocket() {
                     Time: {new Date(latestPrintedOrder.time || latestPrintedOrder.paidTime).toLocaleTimeString('en-AU')}
                 </div>
                 {latestPrintedOrder.seasoning && (
-                    <div style={{ marginTop: '6px', fontWeight: 'bold', fontSize: '14pt', borderTop: '1px dashed black', paddingTop: '6px' }}>
+                    <div style={{ marginTop: '6px', fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, borderTop: '1px dashed black', paddingTop: '6px' }}>
                         SEASONING: {getSeasoningAcronym(latestPrintedOrder.seasoning)}
                     </div>
                 )}
@@ -202,8 +209,8 @@ export default function KitchenDocket() {
 
                     if (isComplex) {
                         return (
-                            <div key={idx} className="docket-item">
-                                <div style={{ marginBottom: '6px', fontWeight: 'bold', fontSize: '16pt', textTransform: 'uppercase' }}>
+                            <div key={idx} className="docket-item" style={{ marginBottom: `${ds.lineSpacing || 12}px` }}>
+                                <div style={{ marginBottom: '6px', fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, textTransform: 'uppercase' }}>
                                     {item.qty || 1}x {abbreviatePackageName(item.name)}
                                 </div>
                                 <div style={{ paddingLeft: '8px' }}>
@@ -212,7 +219,7 @@ export default function KitchenDocket() {
                                         // Specific exception for Chips printing without quantities
                                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
                                         return (
-                                            <div key={sIdx} style={{ fontSize: '16pt', fontWeight: 'bold', marginBottom: '4px' }}>
+                                            <div key={sIdx} style={{ fontSize: `${ds.itemFontSize || 16}pt`, fontWeight: 'bold', marginBottom: '4px' }}>
                                                 {isChips ? abbrName : `${sub.qty * (item.qty || 1)} ${abbrName}`}
                                             </div>
                                         );
@@ -239,8 +246,8 @@ export default function KitchenDocket() {
                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
 
                         return (
-                            <div key={idx} className="docket-item">
-                                <div style={{ fontWeight: 'bold', fontSize: '16pt', textTransform: 'uppercase' }}>
+                            <div key={idx} className="docket-item" style={{ marginBottom: `${ds.lineSpacing || 12}px` }}>
+                                <div style={{ fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, textTransform: 'uppercase' }}>
                                     {isChips ? abbrName : `${normalQty} ${abbrName}`}
                                 </div>
                             </div>
@@ -250,7 +257,7 @@ export default function KitchenDocket() {
             </div>
 
             {/* Total */}
-            <div style={{ borderTop: '2px dashed black', marginTop: '12px', paddingTop: '10px', textAlign: 'right', fontSize: '18pt', fontWeight: 'bold' }}>
+            <div style={{ borderTop: '2px dashed black', marginTop: '12px', paddingTop: '10px', textAlign: 'right', fontSize: `${ds.totalFontSize || 18}pt`, fontWeight: 'bold' }}>
                 TOTAL: ${latestPrintedOrder.total?.toFixed(2)}
             </div>
 
@@ -258,11 +265,11 @@ export default function KitchenDocket() {
             {isQueueEnabled && (
                 <div style={{ marginTop: '30px', borderTop: '2px dashed black', paddingTop: '15px', textAlign: 'center' }}>
                     <div style={{ fontSize: '12pt', marginBottom: '5px' }}>✂️------------------</div>
-                    <div style={{ fontSize: '14pt', fontWeight: 'bold' }}>CUSTOMER TICKET</div>
-                    <div style={{ fontSize: '12pt', marginBottom: '10px', marginTop: '4px' }}>
+                    <div style={{ fontSize: `${ds.itemFontSize || 16}pt`, fontWeight: 'bold' }}>CUSTOMER TICKET</div>
+                    <div style={{ fontSize: `${ds.metaFontSize || 11}pt`, marginBottom: '10px', marginTop: '4px' }}>
                         {latestPrintedOrder.customerName === 'Walk-in' ? 'Walk-in' : latestPrintedOrder.customerName}
                     </div>
-                    <div style={{ fontSize: '48pt', fontWeight: '900', lineHeight: '1', margin: '15px 0' }}>
+                    <div style={{ fontSize: `${ds.queueFontSize || 48}pt`, fontWeight: '900', lineHeight: '1', margin: '15px 0' }}>
                         {latestPrintedOrder.id}
                     </div>
                     <div style={{ fontSize: '12pt', fontStyle: 'italic' }}>Please wait for your number</div>
