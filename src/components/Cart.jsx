@@ -3,7 +3,7 @@ import { usePos } from '../context/PosContext';
 
 export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) {
     const {
-        cart, removeFromCart, updateCartQty, cartSubtotal, cartTotal,
+        cart, removeFromCart, updateCartQty, clearCart, cartSubtotal, cartTotal,
         orderType, setOrderType,
         orderNote, setOrderNote,
         discount, setDiscount, discountAmount
@@ -31,9 +31,20 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
         <div className="cart-area">
             <div className="cart-header">
                 <h2>Current Order</h2>
-                <div className="cart-type-selector">
-                    <button className={`cart-type-btn ${orderType === 'walk-in' ? 'active' : ''}`} onClick={() => setOrderType('walk-in')}>Walk In</button>
-                    <button className={`cart-type-btn ${orderType === 'phone' ? 'active' : ''}`} onClick={() => setOrderType('phone')}>Phone</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {cart.length > 0 && (
+                        <button
+                            onClick={() => { if (window.confirm('Hapus semua item dari order?')) clearCart(); }}
+                            style={{ padding: '5px 10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer' }}
+                            title="Hapus semua item"
+                        >
+                            🗑️ Clear
+                        </button>
+                    )}
+                    <div className="cart-type-selector">
+                        <button className={`cart-type-btn ${orderType === 'walk-in' ? 'active' : ''}`} onClick={() => setOrderType('walk-in')}>Walk In</button>
+                        <button className={`cart-type-btn ${orderType === 'phone' ? 'active' : ''}`} onClick={() => setOrderType('phone')}>Phone</button>
+                    </div>
                 </div>
             </div>
 
