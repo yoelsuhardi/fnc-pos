@@ -18,8 +18,8 @@ export const menuItems = [
     fishCount: 4,
     sideChoicesCount: 4,
     inherentItems: 'Large Chips',
-    requiresSeasoning: true
-    , image: 'https://fishnchipswa.com/uploads/thumb/42eac750d6fcb816d981bf8acd56b4bd.jpg'
+    requiresSeasoning: true,
+    image: 'https://fishnchipswa.com/uploads/thumb/42eac750d6fcb816d981bf8acd56b4bd.jpg'
   },
   {
     id: 'sp_2',
@@ -30,8 +30,8 @@ export const menuItems = [
     fishCount: 2,
     sideChoicesCount: 2,
     inherentItems: 'Small Chips',
-    requiresSeasoning: true
-    , image: 'https://fishnchipswa.com/uploads/thumb/6f157773b0b03cf876130d6b6d509c58.jpeg'
+    requiresSeasoning: true,
+    image: 'https://fishnchipswa.com/uploads/thumb/6f157773b0b03cf876130d6b6d509c58.jpeg'
   },
   {
     id: 'sp_3',
@@ -39,20 +39,60 @@ export const menuItems = [
     name: 'Fisherman\'s Basket',
     price: 28.00,
     requiresSeasoning: true,
-    inherentItems: '1 Kid\'s Box, 4 Squid Rings, 1 Crab Stick, 2 Crumbed Prawns, 1 Sea Scallop',
+    inherentItems: '1 Fish and Chips 4 Squid Rings 1 Crab Stick 2 Crumbed Prawns 1 Sea Scallop',
     image: 'https://fishnchipswa.com/uploads/thumb/88cd3be11567832bf0a26ed47a02545b.jpg'
   },
   {
     id: 'sp_4',
     categoryId: 'specials',
-    name: 'Fish and Chips',
+    name: 'Traditional fish and Chips',
     price: 17.00,
     hasComplexModifiers: true,
     fishCount: 1,
     sideChoicesCount: 0,
-    inherentItems: '1 $4.00 Chips',
+    inherentItems: 'Fish of the Day $4.00 Chips',
     requiresSeasoning: true,
     image: 'https://fishnchipswa.com/uploads/thumb/87726f1cce23be962ed86dad9b7b4f34.jpg'
+  },
+  {
+    id: 'sp_5',
+    categoryId: 'specials',
+    name: 'Snapper and Chips',
+    price: 23.00,
+    requiresSeasoning: true,
+    inherentItems: 'Snapper $4.00 Chips'
+  },
+  {
+    id: 'sp_6',
+    categoryId: 'specials',
+    name: 'Kids Box',
+    price: 12.00,
+    requiresSeasoning: true,
+    inherentItems: 'Half fish of the day and $2.00 chips'
+  },
+  {
+    id: 'sp_7',
+    categoryId: 'specials',
+    name: 'Gummy Shark and Chips',
+    price: 21.50,
+    requiresSeasoning: true,
+    inherentItems: 'Gummy Shark $4.00 Chips'
+  },
+  {
+    id: 'sp_8',
+    categoryId: 'specials',
+    name: 'Grilled Fish and Chips',
+    price: 19.50,
+    requiresSeasoning: true,
+    inherentItems: 'Grilled Fish of the Day $4.00 Chips'
+  },
+  {
+    id: 'sp_9',
+    categoryId: 'specials',
+    name: 'Crumbed Fish and Chips',
+    price: 18.50,
+    requiresSeasoning: true,
+    inherentItems: 'Crumbed Fish of the Day $4.00 Chips'
   },
 
   // Fish (Supports Modifiers)
