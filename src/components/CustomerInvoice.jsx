@@ -35,15 +35,26 @@ export default function CustomerInvoice({ order, onClose }) {
     // Build invoice line items — expand complex items into subitems
     const lineItems = [];
     order.items.forEach(item => {
+        // Quantity multiplier prefix e.g. "3x"
+        const qtyPrefix = item.qty > 1 ? `${item.qty}x ` : '';
+
         if (item.subItems && item.subItems.length > 0) {
-            lineItems.push({ label: item.name, price: item.price, isHeader: true });
+            lineItems.push({ label: `${qtyPrefix}${item.name}`, price: item.price, isHeader: true });
             item.subItems.forEach(sub => {
-                lineItems.push({ label: `  · ${sub.qty > 1 ? sub.qty + 'x ' : ''}${sub.name}`, price: null });
+                // If the parent has its own multiplier, we just display the raw sub-item, 
+                // but if the sub item itself has a multiplier we multiply it
+                const subQtyPrefix = sub.qty > 1 ? `${sub.qty * item.qty}x ` : '';
+                lineItems.push({ label: `  · ${subQtyPrefix}${sub.name}`, price: null });
             });
         } else {
             let label = item.label || item.name;
-            if (item.modifier) label = `${item.name} (${item.modifier.name})`;
-            lineItems.push({ label, price: item.price });
+            if (item.modifier) {
+                label = `${item.name} (${item.modifier.name})`;
+                if (item.inherentItems) {
+                    label += ` + ${item.inherentItems}`;
+                }
+            }
+            lineItems.push({ label: `${qtyPrefix}${label}`, price: item.price });
         }
     });
 
@@ -108,10 +119,24 @@ export default function CustomerInvoice({ order, onClose }) {
                             ))}
                         </div>
 
-                        {/* Total */}
-                        <div style={{ borderTop: '2px solid #000', paddingTop: '10px', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
-                            <span>TOTAL</span>
-                            <span>${order.total?.toFixed(2)}</span>
+                        {/* Calculated Block: Subtotal, Discount, then Total */}
+                        <div style={{ borderTop: '2px solid #000', paddingTop: '10px', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                            {order.discount && order.discount.amount > 0 && (
+                                <>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: 'normal', marginBottom: '4px', color: '#555' }}>
+                                        <span>SUBTOTAL</span>
+                                        <span>${(order.subtotal || order.total + order.discount.amount).toFixed(2)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: 'normal', marginBottom: '8px', color: '#555' }}>
+                                        <span>DISCOUNT</span>
+                                        <span>-${order.discount.amount.toFixed(2)}</span>
+                                    </div>
+                                </>
+                            )}
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>TOTAL</span>
+                                <span>${order.total?.toFixed(2)}</span>
+                            </div>
                         </div>
 
                         {/* Footer */}
