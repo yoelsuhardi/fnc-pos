@@ -53,32 +53,32 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                     <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px' }}>No items in order</div>
                 ) : (
                     cart.map((item) => (
-                        <div className="cart-item" key={item.cartItemId} style={{ padding: '8px', marginBottom: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-                            <div className="cart-item-details" style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'flex-start', paddingRight: '8px' }}>
+                        <div className="cart-item" key={item.cartItemId} style={{ display: 'flex', alignItems: 'center', padding: '8px', marginBottom: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
+                            {/* Qty Stepper on the left */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'var(--panel-bg)', borderRadius: '6px', border: '1px solid var(--panel-border)', padding: '2px', flexShrink: 0, marginRight: '10px' }}>
+                                <button
+                                    onClick={() => updateCartQty(item.cartItemId, item.qty - 1)}
+                                    style={{ width: '26px', height: '26px', background: item.qty === 1 ? '#fee2e2' : 'var(--bg-color)', color: item.qty === 1 ? '#ef4444' : 'var(--text-main)', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', lineHeight: 1 }}
+                                    title={item.qty === 1 ? 'Remove item' : 'Decrease qty'}
+                                >
+                                    {item.qty === 1 ? '×' : '−'}
+                                </button>
+                                <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.95rem' }}>{item.qty}</span>
+                                <button
+                                    onClick={() => updateCartQty(item.cartItemId, item.qty + 1)}
+                                    style={{ width: '26px', height: '26px', background: 'var(--bg-color)', color: 'var(--color-action)', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', lineHeight: 1 }}
+                                    title="Increase qty"
+                                >
+                                    +
+                                </button>
+                            </div>
+
+                            {/* Item details flex area */}
+                            <div className="cart-item-details" style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between', paddingRight: '4px' }}>
                                 <span className="cart-item-name" style={{ whiteSpace: 'pre-wrap', textAlign: 'left', width: '100%', fontSize: '0.9rem', lineHeight: '1.2' }}>
                                     {item.label}
                                 </span>
-                            </div>
-                            <div className="cart-item-price" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                                <span style={{ minWidth: '44px', textAlign: 'right', fontSize: '0.95rem', fontWeight: '500' }}>${item.price.toFixed(2)}</span>
-                                {/* Qty Stepper */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'var(--panel-bg)', borderRadius: '6px', border: '1px solid var(--panel-border)', padding: '2px' }}>
-                                    <button
-                                        onClick={() => updateCartQty(item.cartItemId, item.qty - 1)}
-                                        style={{ width: '26px', height: '26px', background: item.qty === 1 ? '#fee2e2' : 'var(--bg-color)', color: item.qty === 1 ? '#ef4444' : 'var(--text-main)', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', lineHeight: 1 }}
-                                        title={item.qty === 1 ? 'Remove item' : 'Decrease qty'}
-                                    >
-                                        {item.qty === 1 ? '×' : '−'}
-                                    </button>
-                                    <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.95rem' }}>{item.qty}</span>
-                                    <button
-                                        onClick={() => updateCartQty(item.cartItemId, item.qty + 1)}
-                                        style={{ width: '26px', height: '26px', background: 'var(--bg-color)', color: 'var(--color-action)', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', lineHeight: 1 }}
-                                        title="Increase qty"
-                                    >
-                                        +
-                                    </button>
-                                </div>
+                                <span style={{ minWidth: '50px', textAlign: 'right', fontSize: '0.95rem', fontWeight: '500' }}>${item.price.toFixed(2)}</span>
                             </div>
                         </div>
                     ))
