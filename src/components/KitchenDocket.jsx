@@ -219,20 +219,26 @@ export default function KitchenDocket() {
                     }
 
                     if (isComplex) {
+                        const abbrPackageName = abbreviatePackageName(item.name);
+                        // User requested to hide the parent name for these specific packages
+                        const hideParentName = ['FS', 'HFS', 'TRADITIONAL FISH AND CHIPS', 'SNAPPER AND CHIPS', 'GUMMY SHARK AND CHIPS'].includes(abbrPackageName);
+
                         return (
                             <div key={idx} className="docket-item" style={{ marginBottom: `${ds.lineSpacing || 12}px` }}>
-                                <div style={{ marginBottom: '6px', fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, textTransform: 'uppercase' }}>
-                                    {item.qty || 1}x {abbreviatePackageName(item.name)}
-                                </div>
-                                <div style={{ paddingLeft: '8px' }}>
+                                {!hideParentName && (
+                                    <div style={{ marginBottom: '6px', fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, textTransform: 'uppercase' }}>
+                                        {item.qty || 1}x {abbrPackageName}
+                                    </div>
+                                )}
+                                <div style={{ paddingLeft: hideParentName ? '0px' : '8px' }}>
                                     {subItems.map((sub, sIdx) => {
                                         const abbrName = abbreviateName(sub.name);
+                                        // Calculate total quantity for this sub-item
+                                        const totalQty = sub.qty * (item.qty || 1);
+
                                         // specific exception for chips. If it's a sub item and the parent qty > 1, 
                                         // we should probably still show the multiplied quantity, rather than hiding it completely.
                                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
-
-                                        // Calculate total quantity for this sub-item
-                                        const totalQty = sub.qty * (item.qty || 1);
 
                                         // If it's chips and the total quantity is exactly 1, we can omit the "1 ".
                                         // Otherwise, we MUST print the quantity so the kitchen knows how many to make.
