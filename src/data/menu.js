@@ -1,7 +1,7 @@
 export const menuCategories = [
   { id: 'popular', name: 'Popular', color: 'var(--color-specials)' },
   { id: 'specials', name: 'Specials', color: 'var(--color-specials)' },
-  { id: 'fish', name: 'Fish Menu', color: 'var(--color-fish)' },
+  { id: 'fish', name: 'Fish Only', color: 'var(--color-fish)' },
   { id: 'chips', name: 'Chips', color: 'var(--color-chips)' },
   { id: 'sides', name: 'Sides', color: 'var(--color-sides)' },
   { id: 'extras', name: 'Extras', color: 'var(--color-extras, var(--color-sides))' },
@@ -127,13 +127,13 @@ export const menuItems = [
   { id: 's_5', categoryId: 'sides', name: 'Battered Prawns (6)', price: 24.00 },
 
   // Extras
-  { id: 'e_tar_s', categoryId: 'extras', name: 'Tartare Sauce Sachet', price: 0.50 },
-  { id: 'e_tar_j', categoryId: 'extras', name: 'Tartare Sauce Jar', price: 5.00 },
-  { id: 'e_tom_s', categoryId: 'extras', name: 'Tomato Sauce', price: 0.50 },
-  { id: 'e_tom_j', categoryId: 'extras', name: 'Tomato Sauce Bottle', price: 5.00 },
-  { id: 'e_po', categoryId: 'extras', name: 'Pickled Onion', price: 6.00 },
+  { id: 'e_tar_s', categoryId: 'extras', name: 'Tartare Sauce Sachet', price: 0.50, image: 'https://fishnchipswa.com/uploads/thumb/f4ec38135cb118efd2ddcb022407809d.jpg' },
+  { id: 'e_tom_s', categoryId: 'extras', name: 'Tomato Sauce', price: 0.50, image: 'https://fishnchipswa.com/uploads/thumb/49ddd417528833bdd0c9547899dc0741.jpeg' },
   { id: 'e_can', categoryId: 'extras', name: 'Can', price: 3.50 },
+  { id: 'e_tar_j', categoryId: 'extras', name: 'Tartare Sauce Jar', price: 5.00, image: 'https://fishnchipswa.com/uploads/thumb/328884ed5ed387704662d651f0a73978.jpg' },
+  { id: 'e_tom_j', categoryId: 'extras', name: 'Tomato Sauce Bottle', price: 5.00, image: 'https://fishnchipswa.com/uploads/thumb/22514838d3e1e3cdf3bc2383ef98c362.jpeg' },
   { id: 'e_bottle', categoryId: 'extras', name: 'Bottle', price: 5.50 },
+  { id: 'e_po', categoryId: 'extras', name: 'Pickled Onion', price: 6.00, image: 'https://fishnchipswa.com/uploads/thumb/dbddf1c52af10130cbbba15a59f4335e.jpg' },
 ];
 
 export const fishModifiers = [
