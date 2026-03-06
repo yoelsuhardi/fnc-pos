@@ -33,9 +33,11 @@ function createWindow() {
 
 // ─── Silent Print IPC handler ─────────────────────────────────────────────────
 // Called from KitchenDocket.jsx via ipcRenderer.send('silent-print')
-ipcMain.on('silent-print', (event, printerName) => {
+ipcMain.on('silent-print', (event, options = {}) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return;
+
+    const printerName = options.printerName || '';
 
     // We force the print dialog to SHOW because 'silent: true' breaks the layout on the target Windows Thermal Printer.
     // However, we will auto-press Enter using OS-level scripts so the user doesn't have to manually click 'Print'.
