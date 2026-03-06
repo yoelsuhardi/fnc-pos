@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,15 +37,30 @@ ipcMain.on('silent-print', (event, printerName) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return;
 
-    // Native Electron silent print (Works perfectly on Windows)
+    // We force the print dialog to SHOW because 'silent: true' breaks the layout on the target Windows Thermal Printer.
+    // However, we will auto-press Enter using OS-level scripts so the user doesn't have to manually click 'Print'.
     win.webContents.print({
-        silent: true,
+        silent: false, // Show the window explicitly!
         printBackground: true,
-        deviceName: printerName // Use the printerName passed from the renderer
+        deviceName: printerName
     }, (success, errorType) => {
-        if (!success) console.error('[Silent Print] Failed:', errorType);
-        else console.log('[Silent Print] Sent to printer successfully.');
+        if (!success) console.error('[Auto-Enter Print] Failed:', errorType);
+        else console.log('[Auto-Enter Print] Sent to printer successfully.');
     });
+
+    // Fire OS-level keystroke to press 'Enter', confirming the system print dialog automatically.
+    // 1000ms delay ensures the dialog has fully popped up and captured window focus.
+    setTimeout(() => {
+        if (process.platform === 'win32') {
+            exec('powershell.exe -c "$wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys(\'{ENTER}\')"', (err) => {
+                if (err) console.error('Windows Auto-Enter failed:', err);
+            });
+        } else if (process.platform === 'darwin') {
+            exec('osascript -e \'tell application "System Events" to key code 36\'', (err) => {
+                if (err) console.error('Mac Auto-Enter failed:', err);
+            });
+        }
+    }, 1000);
 });
 // ─────────────────────────────────────────────────────────────────────────────
 
