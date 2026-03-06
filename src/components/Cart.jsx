@@ -53,14 +53,14 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                     <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px' }}>No items in order</div>
                 ) : (
                     cart.map((item) => (
-                        <div className="cart-item" key={item.cartItemId}>
+                        <div className="cart-item" key={item.cartItemId} style={{ padding: '8px', marginBottom: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
                             <div className="cart-item-details" style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'flex-start', paddingRight: '8px' }}>
-                                <span className="cart-item-name" style={{ whiteSpace: 'pre-wrap', textAlign: 'left', width: '100%' }}>
+                                <span className="cart-item-name" style={{ whiteSpace: 'pre-wrap', textAlign: 'left', width: '100%', fontSize: '0.9rem', lineHeight: '1.2' }}>
                                     {item.label}
                                 </span>
                             </div>
-                            <div className="cart-item-price" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                                <span style={{ minWidth: '44px', textAlign: 'right' }}>${item.price.toFixed(2)}</span>
+                            <div className="cart-item-price" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                                <span style={{ minWidth: '44px', textAlign: 'right', fontSize: '0.95rem', fontWeight: '500' }}>${item.price.toFixed(2)}</span>
                                 {/* Qty Stepper */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'var(--panel-bg)', borderRadius: '6px', border: '1px solid var(--panel-border)', padding: '2px' }}>
                                     <button
