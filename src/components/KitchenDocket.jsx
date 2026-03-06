@@ -219,11 +219,20 @@ export default function KitchenDocket() {
                                 <div style={{ paddingLeft: '8px' }}>
                                     {subItems.map((sub, sIdx) => {
                                         const abbrName = abbreviateName(sub.name);
-                                        // Specific exception for Chips printing without quantities
+                                        // specific exception for chips. If it's a sub item and the parent qty > 1, 
+                                        // we should probably still show the multiplied quantity, rather than hiding it completely.
                                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
+
+                                        // Calculate total quantity for this sub-item
+                                        const totalQty = sub.qty * (item.qty || 1);
+
+                                        // If it's chips and the total quantity is exactly 1, we can omit the "1 ".
+                                        // Otherwise, we MUST print the quantity so the kitchen knows how many to make.
+                                        const displayPrefix = (isChips && totalQty === 1) ? '' : `${totalQty} `;
+
                                         return (
                                             <div key={sIdx} style={{ fontSize: `${ds.itemFontSize || 16}pt`, fontWeight: 'bold', marginBottom: '4px' }}>
-                                                {isChips ? abbrName : `${sub.qty * (item.qty || 1)} ${abbrName}`}
+                                                {displayPrefix}{abbrName}
                                             </div>
                                         );
                                     })}
@@ -245,13 +254,14 @@ export default function KitchenDocket() {
                         }
 
                         const abbrName = abbreviateName(normalName);
-                        // Hide prefix quantity 1 for specific items like chips, if it is chips. Although normal chips might just be 1.
+                        // Hide prefix quantity 1 for specific items like chips
                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
+                        const displayPrefix = (isChips && normalQty === 1) ? '' : `${normalQty} `;
 
                         return (
                             <div key={idx} className="docket-item" style={{ marginBottom: `${ds.lineSpacing || 12}px` }}>
                                 <div style={{ fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, textTransform: 'uppercase' }}>
-                                    {isChips ? abbrName : `${normalQty} ${abbrName}`}
+                                    {displayPrefix}{abbrName}
                                 </div>
                             </div>
                         );
