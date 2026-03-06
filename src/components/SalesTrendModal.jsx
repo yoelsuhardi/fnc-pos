@@ -67,7 +67,22 @@ export default function SalesTrendModal({ onClose }) {
         const cashPerc = totalRev > 0 ? ((totalCash / totalRev) * 100).toFixed(1) : 0;
         const eftposPerc = totalRev > 0 ? ((totalEftpos / totalRev) * 100).toFixed(1) : 0;
 
-        return { totalRev, totalOrders, avgOrder, cashPerc, eftposPerc, totalCash, totalEftpos };
+        // Aggregate Top 10 Items
+        const mergedItemCounts = {};
+        chartData.forEach(d => {
+            if (d.itemCounts) {
+                Object.entries(d.itemCounts).forEach(([itemName, qty]) => {
+                    mergedItemCounts[itemName] = (mergedItemCounts[itemName] || 0) + qty;
+                });
+            }
+        });
+
+        const top10Items = Object.entries(mergedItemCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([name, qty]) => ({ name, qty }));
+
+        return { totalRev, totalOrders, avgOrder, cashPerc, eftposPerc, totalCash, totalEftpos, top10Items };
     }, [chartData]);
 
     return (
@@ -101,7 +116,7 @@ export default function SalesTrendModal({ onClose }) {
                     </div>
                 </div>
 
-                <div style={{ flex: 1, overflowY: 'auto' }}>
+                <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
                     {/* KPI Cards */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
                         <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
@@ -129,7 +144,7 @@ export default function SalesTrendModal({ onClose }) {
                     </div>
 
                     {/* Chart Container */}
-                    <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '24px', height: '400px' }}>
+                    <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '24px', height: '360px', marginBottom: '32px' }}>
                         <h3 style={{ margin: '0 0 24px 0', color: 'var(--text-main)', fontSize: '1.1rem' }}>Revenue Trend</h3>
 
                         {chartData.length === 0 ? (
@@ -169,16 +184,57 @@ export default function SalesTrendModal({ onClose }) {
                             </ResponsiveContainer>
                         )}
 
-                        {chartData.length === 1 && (
+                        {chartData.length <= 1 && (
                             <div style={{ textAlign: 'center', color: '#f59e0b', fontSize: '0.85rem', marginTop: '12px', fontStyle: 'italic' }}>
-                                Only showing today's progress. The chart will plot a line curve once multiple days are closed in Daily Close.
+                                Note: You need multiple days of Daily Close records to draw a full revenue curve.
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Top 10 Bestselling Items Grid */}
+                    <div style={{ background: 'var(--panel-bg)', border: '1px solid var(--panel-border)', borderRadius: '12px', padding: '24px' }}>
+                        <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🏆</span> Top 10 Bestselling Items
+                        </h3>
+
+                        {aggregates.top10Items.length > 0 ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
+                                {aggregates.top10Items.map((item, index) => (
+                                    <div key={item.name} style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        background: 'rgba(255,255,255,0.02)', border: '1px solid var(--panel-border)',
+                                        borderRadius: '8px', padding: '12px 16px', position: 'relative', overflow: 'hidden'
+                                    }}>
+                                        {/* Rank badge */}
+                                        <div style={{
+                                            position: 'absolute', top: '0', left: '0', bottom: '0', width: '32px',
+                                            background: index < 3 ? 'rgba(59, 130, 246, 0.1)' : 'rgba(0,0,0,0.03)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontWeight: 'bold', color: index < 3 ? '#2563eb' : 'var(--text-muted)',
+                                            borderRight: '1px solid var(--panel-border)'
+                                        }}>
+                                            {index + 1}
+                                        </div>
+
+                                        <div style={{ flex: 1, paddingLeft: '40px', fontWeight: '500', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '12px' }} title={item.name}>
+                                            {item.name}
+                                        </div>
+                                        <div style={{ fontWeight: 'bold', color: 'var(--color-primary)', background: 'var(--bg-color)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.85rem' }}>
+                                            {item.qty}x
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>
+                                No items sold yet in this timeframe. Make a sale to see it here!
                             </div>
                         )}
                     </div>
                 </div>
 
                 <div className="modal-actions" style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--panel-border)', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button className="btn-secondary" onClick={onClose} style={{ padding: '12px 32px', fontSize: '1.1rem' }}>Close</button>
+                    <button className="btn-secondary" onClick={onClose} style={{ padding: '12px 32px', fontSize: '1.1rem' }}>Close Dashboard</button>
                 </div>
             </div>
         </div>

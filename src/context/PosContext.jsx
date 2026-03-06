@@ -187,7 +187,8 @@ export const PosProvider = ({ children }) => {
                 totalRevenue: dailyStats.totalRevenue,
                 totalOrders: dailyStats.totalOrders,
                 cashTotal: dailyStats.cashTotal,
-                eftposTotal: dailyStats.eftposTotal
+                eftposTotal: dailyStats.eftposTotal,
+                itemCounts: dailyStats.itemCounts || {}
             }];
             localStorage.setItem('fnc_historical_sales', JSON.stringify(newArchive));
             return newArchive;
@@ -322,7 +323,7 @@ export const PosProvider = ({ children }) => {
         const cashTotal = cashOrders.reduce((s, o) => s + (o.total || 0), 0);
         const eftposTotal = eftposOrders.reduce((s, o) => s + (o.total || 0), 0);
 
-        return { totalRevenue, totalOrders, topItems, cashTotal, eftposTotal };
+        return { totalRevenue, totalOrders, itemCounts, topItems, cashTotal, eftposTotal };
     }, [paidOrders]);
 
     const savePhoneOrder = (customerName, seasoning = null) => {
