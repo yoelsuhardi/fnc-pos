@@ -20,7 +20,18 @@ export default function MenuGrid() {
             const adjustedMods = modifierOrModifiers.map(adjustPrice);
             adjustedMods.forEach(mod => addToCart(adjustedItem, mod));
         } else {
-            addToCart(adjustedItem, adjustPrice(modifierOrModifiers));
+            // Check if quantity is provided in the modifier payload (for complex modifiers)
+            const qty = modifierOrModifiers?.quantity || 1;
+            const singleMod = adjustPrice(modifierOrModifiers);
+
+            // Re-apply original quantity if it existed, so we don't accidentally drop it during adjustPrice
+            if (singleMod && modifierOrModifiers.quantity) {
+                singleMod.quantity = qty;
+            }
+
+            for (let i = 0; i < qty; i++) {
+                addToCart(adjustedItem, singleMod);
+            }
         }
     };
 

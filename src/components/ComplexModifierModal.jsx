@@ -13,6 +13,9 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
         }))
     );
 
+    // Track quantity of this identical special combo
+    const [quantity, setQuantity] = useState(1);
+
     // Track selected side choices. Object of { choiceId: count }
     const [sideChoices, setSideChoices] = useState({});
 
@@ -80,7 +83,8 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
 
         onSave(item, {
             name: modDesc,
-            price: extraCost
+            price: extraCost,
+            quantity: quantity
         });
     };
 
@@ -198,19 +202,49 @@ export default function ComplexModifierModal({ item, onSave, onClose, priceMulti
                     )}
                 </div>
 
-                <div className="modal-actions" style={{ marginTop: '32px', paddingTop: '16px', borderTop: '1px solid var(--panel-border)' }}>
+                <div className="modal-actions" style={{ marginTop: '32px', paddingTop: '16px', borderTop: '1px solid var(--panel-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <button className="btn-secondary" onClick={onClose}>Cancel</button>
-                    <button
-                        className="btn-primary"
-                        onClick={handleSave}
-                        disabled={!isComplete}
-                        style={{
-                            opacity: isComplete ? 1 : 0.5,
-                            background: isComplete ? 'var(--color-success)' : 'var(--color-action)'
-                        }}
-                    >
-                        {isComplete ? 'Confirm & Add to Cart' : `Select ${item.sideChoicesCount - totalSidesSelected} more side(s)`}
-                    </button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        {/* Quantity Stepper */}
+                        {isComplete && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8fafc', padding: '4px 12px', borderRadius: '24px', border: '1px solid var(--panel-border)' }}>
+                                <button
+                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    disabled={quantity <= 1}
+                                    style={{
+                                        width: '32px', height: '32px', borderRadius: '50%',
+                                        border: 'none', background: 'var(--panel-border)', color: 'white',
+                                        fontSize: '1.2rem', cursor: quantity <= 1 ? 'not-allowed' : 'pointer',
+                                        opacity: quantity <= 1 ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                    }}
+                                >-</button>
+                                <span style={{ fontSize: '1.2rem', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{quantity}</span>
+                                <button
+                                    onClick={() => setQuantity(quantity + 1)}
+                                    style={{
+                                        width: '32px', height: '32px', borderRadius: '50%',
+                                        border: 'none', background: 'var(--color-action)', color: 'white',
+                                        fontSize: '1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                    }}
+                                >+</button>
+                            </div>
+                        )}
+
+                        <button
+                            className="btn-primary"
+                            onClick={handleSave}
+                            disabled={!isComplete}
+                            style={{
+                                opacity: isComplete ? 1 : 0.5,
+                                background: isComplete ? 'var(--color-success)' : 'var(--color-action)',
+                                padding: '12px 24px',
+                                fontSize: '1.1rem'
+                            }}
+                        >
+                            {isComplete ? (quantity > 1 ? `Confirm & Add ${quantity} to Cart` : 'Confirm & Add to Cart') : `Select ${item.sideChoicesCount - totalSidesSelected} more side(s)`}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
