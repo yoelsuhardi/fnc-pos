@@ -50,7 +50,7 @@ export const menuItems = [
     hasComplexModifiers: true,
     fishCount: 1,
     sideChoicesCount: 0,
-    inherentItems: 'Fish of the Day $4.00 Chips',
+    inherentItems: '$4.00 Chips',
     requiresSeasoning: true,
     image: 'https://fishnchipswa.com/uploads/thumb/87726f1cce23be962ed86dad9b7b4f34.jpg'
   },
@@ -63,7 +63,7 @@ export const menuItems = [
     fishCount: 1,
     sideChoicesCount: 0,
     requiresSeasoning: true,
-    inherentItems: 'Snapper $4.00 Chips',
+    inherentItems: '$4.00 Chips',
     image: 'https://fishnchipswa.com/uploads/thumb/d6b0373b852fb3927ba098552e7547f4.jpg'
   },
   {
@@ -75,7 +75,7 @@ export const menuItems = [
     fishCount: 1,
     sideChoicesCount: 0,
     requiresSeasoning: true,
-    inherentItems: 'Half fish of the day and $2.00 chips',
+    inherentItems: '$2.00 Chips',
     image: 'https://fishnchipswa.com/uploads/thumb/805769d80d0aba7d3d493e3a52eb8a2a.jpg'
   },
   {
@@ -87,7 +87,7 @@ export const menuItems = [
     fishCount: 1,
     sideChoicesCount: 0,
     requiresSeasoning: true,
-    inherentItems: 'Gummy Shark $4.00 Chips',
+    inherentItems: '$4.00 Chips',
     image: 'https://fishnchipswa.com/uploads/thumb/oHTVekRz1713448732-300_350.jpg'
   },
 
