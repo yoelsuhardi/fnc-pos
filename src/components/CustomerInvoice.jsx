@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { usePos } from '../context/PosContext';
 
 const isElectron = typeof window !== 'undefined' && window.process?.type === 'renderer';
@@ -46,7 +47,7 @@ export default function CustomerInvoice({ order, onClose }) {
         }
     });
 
-    return (
+    return createPortal(
         <>
             {/* ── Screen overlay with close button ── */}
             <div className="modal-overlay" style={{ zIndex: 9999 }}>
@@ -141,6 +142,7 @@ export default function CustomerInvoice({ order, onClose }) {
                     </button>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 }

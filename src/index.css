@@ -528,13 +528,17 @@ body {
   }
 
   /* ── Customer Invoice mode (body.printing-invoice) ── */
-  body.printing-invoice * {
-    visibility: hidden;
+  /* Hide the main application root completely */
+  body.printing-invoice #root {
+    display: none !important;
   }
 
-  body.printing-invoice #customer-invoice-content,
-  body.printing-invoice #customer-invoice-content * {
-    visibility: visible;
+  /* The modal overlay wrapping the invoice usually sits outside or at the top of DOM if ported, 
+     but assuming it's inside #root we need to handle it. Actually, if it's inside #root, 
+     we should hide the pos-header and pos-workspace instead. */
+  body.printing-invoice .pos-header,
+  body.printing-invoice .pos-workspace {
+    display: none !important;
   }
 
   body.printing-invoice #customer-invoice-content {
