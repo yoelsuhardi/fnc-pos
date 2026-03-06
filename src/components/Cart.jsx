@@ -74,7 +74,7 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
                             </div>
 
                             {/* Item details flex area */}
-                            <div className="cart-item-details" style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div className="cart-item-details" style={{ display: 'flex', flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'space-between' }}>
                                 <span className="cart-item-name" style={{ flex: 1, whiteSpace: 'pre-wrap', textAlign: 'left', paddingRight: '12px', fontSize: '0.9rem', lineHeight: '1.2' }}>
                                     {item.label}
                                 </span>
