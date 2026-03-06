@@ -197,7 +197,7 @@ body {
 
 /* Right side: Cart */
 .cart-area {
-  width: 400px;
+  width: 480px;
   background: var(--panel-bg);
   display: flex;
   flex-direction: column;
