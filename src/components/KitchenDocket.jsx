@@ -86,9 +86,9 @@ export default function KitchenDocket() {
             return "SN";
         }
         if (n.includes("GUMMY SHARK")) {
-            if (n.includes("GRILLED")) return "GS (gr)";
-            if (n.includes("CRUMBED")) return "GS (cr)";
-            return "GS";
+            if (n.includes("GRILLED")) return "G/S (gr)";
+            if (n.includes("CRUMBED")) return "G/S (cr)";
+            return "G/S";
         }
         if (n.includes("FISH OF THE DAY") || n.includes("BATTERED FISH") || n.includes("GRILLED FISH") || n.includes("CRUMBED FISH") || n === "FISH") {
             if (n.includes("GRILLED")) return "H (gr)";
@@ -102,8 +102,8 @@ export default function KitchenDocket() {
         let subs = [];
         const nameUpper = (item.name || '').toUpperCase();
 
-        // Fisherman's Basket — no detail, print as-is
-        if (nameUpper.includes('FISHERMAN')) return [];
+        // Fisherman's Basket and Kids Box — no detail, print as-is
+        if (nameUpper.includes('FISHERMAN') || nameUpper.includes("KID'S BOX") || nameUpper === "KIDS BOX") return [];
 
         // Parse complex modifier (Family Special choices)
         if (item.modifier && item.hasComplexModifiers) {
@@ -116,7 +116,11 @@ export default function KitchenDocket() {
                 fishParts.forEach(part => {
                     const match = part.match(/(\d+)x\s+(.*)/);
                     if (match) {
-                        subs.push({ qty: parseInt(match[1]), name: `${match[2]} Fish` });
+                        let fName = "Fish";
+                        if (nameUpper.includes("SNAPPER")) fName = "KING SNAPPER";
+                        else if (nameUpper.includes("GUMMY SHARK") || nameUpper === "GUMMY SHARK AND CHIPS") fName = "GUMMY SHARK";
+
+                        subs.push({ qty: parseInt(match[1]), name: `${match[2]} ${fName}` });
                     }
                 });
             }
@@ -136,7 +140,11 @@ export default function KitchenDocket() {
             }
         } else if (item.fishCount) {
             // Fallback for missing modifiers string
-            subs.push({ qty: item.fishCount, name: 'Battered Fish' });
+            let fName = "Battered Fish";
+            if (nameUpper.includes("SNAPPER")) fName = "Battered KING SNAPPER";
+            else if (nameUpper.includes("GUMMY SHARK") || nameUpper === "GUMMY SHARK AND CHIPS") fName = "Battered GUMMY SHARK";
+
+            subs.push({ qty: item.fishCount, name: fName });
         }
 
         // Parse inherent items (e.g. Fisherman's basket, Chips in combo)
