@@ -58,7 +58,28 @@ export default function KitchenDocket() {
 
     const abbreviateName = (name) => {
         const n = name.toUpperCase();
-        if (n.includes("KID'S BOX") || n === "KIDS BOX") return "KB";
+
+        // Exact mapping logic for specific parent combos
+        if (n.includes("KING SNAPPER")) {
+            if (n.includes("GRILLED")) return "SN (gr)";
+            if (n.includes("CRUMBED")) return "SN (cr)";
+            return "SN";
+        }
+        if (n.includes("GUMMY SHARK")) {
+            if (n.includes("GRILLED")) return "G/S (gr)";
+            if (n.includes("CRUMBED")) return "G/S (cr)";
+            return "G/S";
+        }
+        if (n.includes("KID'S BOX") || n.includes("KIDS BOX")) {
+            if (n.includes("GRILLED")) return "KB (gr)";
+            if (n.includes("CRUMBED")) return "KB (cr)";
+            return "KB";
+        }
+        if (n.includes("FISH OF THE DAY") || n.includes("BATTERED FISH") || n.includes("GRILLED FISH") || n.includes("CRUMBED FISH") || n === "FISH") {
+            if (n.includes("GRILLED")) return "H (gr)";
+            if (n.includes("CRUMBED")) return "H (cr)";
+            return "H";
+        }
         if (n.includes("SQUID")) return "SQUID";
 
         if (n.includes("CRAB") && n.includes("STICK")) return "CR / ST";
@@ -79,22 +100,6 @@ export default function KitchenDocket() {
         if (n.includes("$8.00 CHIPS") || n.includes("SMALL CHIPS") || n === "800") return "800";
         if (n.includes("$4.00 CHIPS") || n === "400") return "400";
 
-        // Exact fishes mapping according to new logic
-        if (n.includes("KING SNAPPER")) {
-            if (n.includes("GRILLED")) return "SN (gr)";
-            if (n.includes("CRUMBED")) return "SN (cr)";
-            return "SN";
-        }
-        if (n.includes("GUMMY SHARK")) {
-            if (n.includes("GRILLED")) return "G/S (gr)";
-            if (n.includes("CRUMBED")) return "G/S (cr)";
-            return "G/S";
-        }
-        if (n.includes("FISH OF THE DAY") || n.includes("BATTERED FISH") || n.includes("GRILLED FISH") || n.includes("CRUMBED FISH") || n === "FISH") {
-            if (n.includes("GRILLED")) return "H (gr)";
-            if (n.includes("CRUMBED")) return "H (cr)";
-            return "H";
-        }
         return n;
     };
 
@@ -236,17 +241,19 @@ export default function KitchenDocket() {
                                         // Calculate total quantity for this sub-item
                                         const totalQty = sub.qty * (item.qty || 1);
 
-                                        // specific exception for chips. If it's a sub item and the parent qty > 1, 
-                                        // we should probably still show the multiplied quantity, rather than hiding it completely.
+                                        // specific exception for chips. Multiply the base denomination (e.g. 400) by the totalQty.
                                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
 
-                                        // If it's chips and the total quantity is exactly 1, we can omit the "1 ".
-                                        // Otherwise, we MUST print the quantity so the kitchen knows how many to make.
-                                        const displayPrefix = (isChips && totalQty === 1) ? '' : `${totalQty} `;
+                                        let printedLine = '';
+                                        if (isChips) {
+                                            printedLine = (parseInt(abbrName) * totalQty).toString();
+                                        } else {
+                                            printedLine = `${totalQty} ${abbrName}`;
+                                        }
 
                                         return (
                                             <div key={sIdx} style={{ fontSize: `${ds.itemFontSize || 16}pt`, fontWeight: 'bold', marginBottom: '4px' }}>
-                                                {displayPrefix}{abbrName}
+                                                {printedLine}
                                             </div>
                                         );
                                     })}
@@ -268,14 +275,20 @@ export default function KitchenDocket() {
                         }
 
                         const abbrName = abbreviateName(normalName);
-                        // Hide prefix quantity 1 for specific items like chips
+                        // Multiply the base denomination (e.g. 400) by the totalQty for Chips
                         const isChips = abbrName === '1600' || abbrName === '800' || abbrName === '1200' || abbrName === '400';
-                        const displayPrefix = (isChips && normalQty === 1) ? '' : `${normalQty} `;
+
+                        let printedLine = '';
+                        if (isChips) {
+                            printedLine = (parseInt(abbrName) * normalQty).toString();
+                        } else {
+                            printedLine = `${normalQty} ${abbrName}`;
+                        }
 
                         return (
                             <div key={idx} className="docket-item" style={{ marginBottom: `${ds.lineSpacing || 12}px` }}>
                                 <div style={{ fontWeight: 'bold', fontSize: `${ds.itemFontSize || 16}pt`, textTransform: 'uppercase' }}>
-                                    {displayPrefix}{abbrName}
+                                    {printedLine}
                                 </div>
                             </div>
                         );
