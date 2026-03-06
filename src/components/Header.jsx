@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ openPhoneQueue, openTransactions, openDailyClose, openSettings, onZoomIn, onZoomOut, onZoomReset, zoomLevel }) {
+export default function Header({ openTrends, openPhoneQueue, openTransactions, openDailyClose, openSettings, onZoomIn, onZoomOut, onZoomReset, zoomLevel }) {
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -30,6 +30,13 @@ export default function Header({ openPhoneQueue, openTransactions, openDailyClos
                 </div>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button
+                    className="cart-type-btn"
+                    style={{ background: 'var(--panel-border)', color: 'var(--text-main)', padding: '8px 14px', borderRadius: '8px', border: '1px solid #ccc' }}
+                    onClick={openTrends}
+                >
+                    📈 Trend
+                </button>
                 <button
                     className="cart-type-btn"
                     style={{ background: 'var(--panel-border)', color: 'var(--text-main)', padding: '8px 14px', borderRadius: '8px', border: '1px solid #ccc' }}

@@ -165,6 +165,35 @@ export const PosProvider = ({ children }) => {
         });
     };
 
+    const [historicalSales, setHistoricalSales] = useState(() => {
+        try {
+            const saved = localStorage.getItem('fnc_historical_sales');
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    const archiveDailyStats = () => {
+        setHistoricalSales(prev => {
+            // Check if today is already archived to prevent double-archiving
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const alreadyArchived = prev.some(record => record.date.startsWith(todayStr));
+
+            if (alreadyArchived) return prev; // Do nothing if already saved today
+
+            const newArchive = [...prev, {
+                date: new Date().toISOString(),
+                totalRevenue: dailyStats.totalRevenue,
+                totalOrders: dailyStats.totalOrders,
+                cashTotal: dailyStats.cashTotal,
+                eftposTotal: dailyStats.eftposTotal
+            }];
+            localStorage.setItem('fnc_historical_sales', JSON.stringify(newArchive));
+            return newArchive;
+        });
+    };
+
     const addToCart = (item, modifier = null, seasoning = null) => {
         const cartItemId = Math.random().toString(36).substr(2, 9);
         let finalPrice = item.price;
@@ -406,7 +435,9 @@ export const PosProvider = ({ children }) => {
             paidOrders,
             dailyStats,
             triggerKitchenPrint,
-            voidOrder
+            voidOrder,
+            historicalSales,
+            archiveDailyStats
         }}>
             {children}
         </PosContext.Provider>

@@ -13,6 +13,7 @@ import CustomerInvoice from './components/CustomerInvoice';
 import DailyCloseModal from './components/DailyCloseModal';
 import OrderTypePrompt from './components/OrderTypePrompt';
 import CashTenderModal from './components/CashTenderModal';
+import SalesTrendModal from './components/SalesTrendModal';
 import { usePos } from './context/PosContext';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showEftpos, setShowEftpos] = useState(false);
   const [showCashModal, setShowCashModal] = useState(false);
+  const [showTrends, setShowTrends] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -149,6 +151,7 @@ function App() {
           onZoomIn={() => applyZoom(zoomLevel + 0.1)}
           onZoomOut={() => applyZoom(zoomLevel - 0.1)}
           onZoomReset={() => applyZoom(1.0)}
+          openTrends={() => setShowTrends(true)}
           openPhoneQueue={() => setShowQueueModal(true)}
           openTransactions={() => setShowTransactionsModal(true)}
           openDailyClose={() => setShowDailyClose(true)}
@@ -249,6 +252,12 @@ function App() {
           amount={cartTotal}
           onSuccess={handleWalkInEftposSuccess}
           onCancel={() => setShowEftpos(false)}
+        />
+      )}
+
+      {showTrends && (
+        <SalesTrendModal
+          onClose={() => setShowTrends(false)}
         />
       )}
 

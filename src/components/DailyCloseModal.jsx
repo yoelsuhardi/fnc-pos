@@ -14,7 +14,7 @@ const triggerSilentPrint = (printerName = '') => {
 };
 
 export default function DailyCloseModal({ onClose }) {
-    const { dailyStats, paidOrders, selectedPrinter, orderFrequencies } = usePos();
+    const { dailyStats, paidOrders, selectedPrinter, orderFrequencies, archiveDailyStats } = usePos();
     const isElectronEnv = typeof window !== 'undefined' && window.process?.type === 'renderer';
 
     const now = new Date();
@@ -23,6 +23,7 @@ export default function DailyCloseModal({ onClose }) {
     const handlePrint = () => {
         document.body.classList.add('printing-daily-close');
         triggerSilentPrint(selectedPrinter);
+        archiveDailyStats(); // Save for history trend chart before closing
         setTimeout(() => document.body.classList.remove('printing-daily-close'), 2000);
     };
 
@@ -52,6 +53,8 @@ export default function DailyCloseModal({ onClose }) {
             a.click();
             URL.revokeObjectURL(url);
         }
+
+        archiveDailyStats(); // Save for history trend chart
     };
 
     return (
