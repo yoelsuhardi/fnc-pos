@@ -321,10 +321,10 @@ export const PosProvider = ({ children }) => {
         setOrderType('walk-in');
     };
 
-    const payPhoneOrder = (orderId) => {
+    const payPhoneOrder = (orderId, method = 'eftpos') => {
         const order = phoneOrders.find(o => o.id === orderId);
         if (order) {
-            const finalizedOrder = { ...order, status: 'paid', paidTime: new Date().toISOString() };
+            const finalizedOrder = { ...order, status: 'paid', paidTime: new Date().toISOString(), paymentMethod: method };
             addPaidOrder(finalizedOrder);
         }
         setPhoneOrders(prev => prev.filter(o => o.id !== orderId));

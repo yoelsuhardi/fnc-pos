@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { usePos } from '../context/PosContext';
 import EftposModal from './EftposModal';
+import CashTenderModal from './CashTenderModal';
 
 export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
     const { phoneOrders, payPhoneOrder, triggerKitchenPrint } = usePos();
     const [payingOrder, setPayingOrder] = useState(null);
+    const [payingMethod, setPayingMethod] = useState(null); // 'eftpos' or 'cash'
     const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-    const handleEftposSuccess = () => {
-        payPhoneOrder(payingOrder.id);
+    const handleSuccess = (method) => {
+        payPhoneOrder(payingOrder.id, method);
         setPayingOrder(null);
+        setPayingMethod(null);
     };
 
     return (
@@ -71,10 +74,17 @@ export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
                                             </button>
                                             <button
                                                 className="pay-btn"
-                                                style={{ padding: '8px 20px', fontSize: '1rem', width: 'auto' }}
-                                                onClick={() => setPayingOrder(order)}
+                                                style={{ padding: '8px 16px', fontSize: '0.9rem', width: 'auto', background: '#27ae60' }}
+                                                onClick={() => { setPayingOrder(order); setPayingMethod('cash'); }}
                                             >
-                                                Pay
+                                                💵 Cash
+                                            </button>
+                                            <button
+                                                className="pay-btn"
+                                                style={{ padding: '8px 16px', fontSize: '0.9rem', width: 'auto' }}
+                                                onClick={() => { setPayingOrder(order); setPayingMethod('eftpos'); }}
+                                            >
+                                                💳 Card
                                             </button>
                                         </div>
                                     </div>
@@ -111,11 +121,19 @@ export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
                 </div>
             </div>
 
-            {payingOrder && (
+            {payingOrder && payingMethod === 'eftpos' && (
                 <EftposModal
                     amount={payingOrder.total}
-                    onSuccess={handleEftposSuccess}
-                    onCancel={() => setPayingOrder(null)}
+                    onSuccess={() => handleSuccess('eftpos')}
+                    onCancel={() => { setPayingOrder(null); setPayingMethod(null); }}
+                />
+            )}
+
+            {payingOrder && payingMethod === 'cash' && (
+                <CashTenderModal
+                    amountDue={payingOrder.total}
+                    onSuccess={() => handleSuccess('cash')}
+                    onCancel={() => { setPayingOrder(null); setPayingMethod(null); }}
                 />
             )}
         </div>
