@@ -83,7 +83,6 @@ export const menuItems = [
   { id: 's_18', categoryId: 'sides', name: 'Beef Sausage', price: 5.00 },
   { id: 's_19', categoryId: 'sides', name: 'Battered Frank', price: 5.00 },
   { id: 's_23', categoryId: 'sides', name: 'Onion Rings (6)', price: 6.00 },
-  { id: 's_11', categoryId: 'extras', name: 'Pickled Onion (1 Tub)', price: 6.00 },
   { id: 's_20', categoryId: 'sides', name: 'Hamburger Patty', price: 7.00 },
   { id: 's_3', categoryId: 'sides', name: 'Chicken Nuggets (6)', price: 8.00 },
   { id: 's_4', categoryId: 'sides', name: 'Battered Mussels (6)', price: 8.00 },
@@ -92,6 +91,11 @@ export const menuItems = [
   { id: 's_5', categoryId: 'sides', name: 'Battered Prawns (6)', price: 24.00 },
 
   // Extras
+  { id: 'e_tar_s', categoryId: 'extras', name: 'Tartare Sauce Sachet', price: 0.50 },
+  { id: 'e_tar_j', categoryId: 'extras', name: 'Tartare Sauce Jar', price: 5.00 },
+  { id: 'e_tom_s', categoryId: 'extras', name: 'Tomato Sauce', price: 0.50 },
+  { id: 'e_tom_j', categoryId: 'extras', name: 'Tomato Sauce Bottle', price: 5.00 },
+  { id: 'e_po', categoryId: 'extras', name: 'Pickled Onion', price: 6.00 },
   { id: 'e_can', categoryId: 'extras', name: 'Can', price: 3.50 },
   { id: 'e_bottle', categoryId: 'extras', name: 'Bottle', price: 5.50 },
 ];
