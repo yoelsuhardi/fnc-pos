@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePos } from '../context/PosContext';
 
 export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) {
@@ -12,6 +12,14 @@ export default function Cart({ onPayEftpos, onSavePhoneOrder, onPrintInvoice }) 
     const [showDiscount, setShowDiscount] = useState(false);
     const [discountInput, setDiscountInput] = useState('');
     const [discountType, setDiscountType] = useState('amount'); // 'amount' | 'percent'
+
+    // Sync local input state with global discount reset (e.g., after payment)
+    useEffect(() => {
+        if (discount.type === 'none') {
+            setDiscountInput('');
+            setShowDiscount(false);
+        }
+    }, [discount.type]);
 
     const applyDiscount = () => {
         const val = parseFloat(discountInput);
