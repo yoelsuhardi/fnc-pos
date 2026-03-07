@@ -14,7 +14,9 @@ import DailyCloseModal from './components/DailyCloseModal';
 import OrderTypePrompt from './components/OrderTypePrompt';
 import CashTenderModal from './components/CashTenderModal';
 import SalesTrendModal from './components/SalesTrendModal';
+import ActivationScreen from './components/ActivationScreen';
 import { usePos } from './context/PosContext';
+import { validateLicense } from './utils/licenseValidator';
 
 function App() {
   const { cart, cartTotal, processWalkInPayment, savePhoneOrder } = usePos();
@@ -29,6 +31,11 @@ function App() {
   const [showTrends, setShowTrends] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceOrder, setInvoiceOrder] = useState(null);
+
+  // Licensing State
+  const [isActivated, setIsActivated] = useState(false);
+  const [isCheckingLicense, setIsCheckingLicense] = useState(true);
+
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showZoomToast, setShowZoomToast] = useState(false);
   const zoomToastTimer = useRef(null);
@@ -40,6 +47,27 @@ function App() {
     setShowZoomToast(true);
     if (zoomToastTimer.current) clearTimeout(zoomToastTimer.current);
     zoomToastTimer.current = setTimeout(() => setShowZoomToast(false), 1500);
+  }, []);
+
+  // Check License on Startup
+  useEffect(() => {
+    const checkLicense = async () => {
+      const storedKey = localStorage.getItem('fnc_license_key');
+      if (storedKey) {
+        const result = await validateLicense(storedKey);
+        if (result.valid) {
+          setIsActivated(true);
+        } else {
+          // Key is corrupt or expired, rip it out so they are forced to renter
+          localStorage.removeItem('fnc_license_key');
+          setIsActivated(false);
+        }
+      } else {
+        setIsActivated(false);
+      }
+      setIsCheckingLicense(false);
+    };
+    checkLicense();
   }, []);
 
   // Chrome-style keyboard shortcuts
@@ -138,6 +166,18 @@ function App() {
     savePhoneOrder(name, selectedSeasoning);
     setSelectedSeasoning(null);
   };
+
+  if (isCheckingLicense) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a', color: '#fff' }}>
+        <h2>Memuat Sistem Keamanan...</h2>
+      </div>
+    );
+  }
+
+  if (!isActivated) {
+    return <ActivationScreen onLicenseValid={() => setIsActivated(true)} />;
+  }
 
   return (
     <>
