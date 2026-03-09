@@ -70,12 +70,18 @@ ipcMain.on('silent-print', (event, payload) => {
     if (!win) return;
 
     const printOptions = {
-        silent: !isPreview,  // Dialog shown only if isPreview is true
-        printBackground: true // Print background colors/styles
+        silent: !isPreview,
+        printBackground: true,
+        margins: { marginType: 'none' }
     };
 
     if (!isPreview) {
-        printOptions.margins = { marginType: 'none' };
+        printOptions.landscape = false;
+        printOptions.scaleFactor = 100;
+        printOptions.pagesPerSheet = 1;
+        printOptions.collate = false;
+        printOptions.copies = 1;
+
         if (printerName) printOptions.deviceName = printerName;
     }
 

@@ -8,6 +8,7 @@ export default function MenuGrid() {
     const [activeCategory, setActiveCategory] = useState('popular');
     const [selectedFish, setSelectedFish] = useState(null);
     const [selectedSpecial, setSelectedSpecial] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const { addToCart, orderFrequencies, isHolidaySurcharge } = usePos();
     const priceMultiplier = isHolidaySurcharge ? 1.1 : 1;
@@ -45,6 +46,15 @@ export default function MenuGrid() {
     };
 
     const visibleItems = React.useMemo(() => {
+        if (activeCategory === 'search') {
+            if (!searchQuery.trim()) return [];
+            const query = searchQuery.toLowerCase();
+            return menuItems.filter(item =>
+                item.name.toLowerCase().includes(query) ||
+                (item.label && item.label.toLowerCase().includes(query))
+            );
+        }
+
         if (activeCategory === 'popular') {
             const sortedItems = [...menuItems].sort((a, b) => {
                 const freqA = orderFrequencies[a.id] || 0;
@@ -60,10 +70,24 @@ export default function MenuGrid() {
             return populars;
         }
         return menuItems.filter(item => item.categoryId === activeCategory);
-    }, [activeCategory, orderFrequencies]);
+    }, [activeCategory, orderFrequencies, searchQuery]);
     return (
         <div className="menu-area">
             <div className="category-bar">
+                <button
+                    className={`category-btn ${activeCategory === 'search' ? 'active' : ''}`}
+                    onClick={() => { setActiveCategory('search'); setSearchQuery(''); }}
+                    style={{
+                        backgroundColor: activeCategory === 'search' ? '#3b82f6' : '#e2e8f0',
+                        color: activeCategory === 'search' ? 'white' : 'var(--text-main)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        border: 'none'
+                    }}
+                >
+                    🔍 Search
+                </button>
                 {menuCategories.map(cat => (
                     <button
                         key={cat.id}
@@ -79,6 +103,28 @@ export default function MenuGrid() {
                     </button>
                 ))}
             </div>
+
+            {activeCategory === 'search' && (
+                <div style={{ padding: '20px', background: 'white', borderBottom: '1px solid var(--panel-border)' }}>
+                    <input
+                        type="search"
+                        placeholder="Search menu items..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus
+                        style={{
+                            width: '100%',
+                            padding: '16px',
+                            fontSize: '1.5rem',
+                            borderRadius: '12px',
+                            border: '2px solid #3b82f6',
+                            outline: 'none',
+                            color: 'var(--text-main)',
+                            background: 'var(--bg-color)'
+                        }}
+                    />
+                </div>
+            )}
 
             {isHolidaySurcharge && (
                 <div style={{ background: '#f44336', color: 'white', padding: '6px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem', letterSpacing: '1px' }}>

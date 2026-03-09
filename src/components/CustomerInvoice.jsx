@@ -20,9 +20,12 @@ export default function CustomerInvoice({ order, onClose }) {
     };
 
     useEffect(() => {
+        // When printing silently (no dialog), give the DOM 2 full seconds to rasterize fonts and images.
+        // Otherwise, Electron's webContents.print captures a blank frame instantly.
+        const printDelayMs = isPreviewEnabled ? 900 : 2000;
         const timer = setTimeout(() => {
             triggerInvoicePrint();
-        }, isPreviewEnabled ? 900 : 300);
+        }, printDelayMs);
         return () => clearTimeout(timer);
     }, []);
 

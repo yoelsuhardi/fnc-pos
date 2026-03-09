@@ -29,56 +29,63 @@ export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content" style={{ maxWidth: '600px' }}>
-                <h2 className="modal-title">Pending Phone Orders</h2>
+            <div className="modal-content" style={{ maxWidth: '650px', background: '#ffffff', color: '#0f172a', padding: '32px', borderRadius: '16px' }}>
+                <h2 className="modal-title" style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '800', border: 'none', marginBottom: '24px', color: '#0f172a' }}>
+                    Pending Phone Orders
+                </h2>
 
                 {phoneOrders.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                    <div style={{ textAlign: 'center', padding: '40px', color: '#64748b', fontSize: '1.2rem' }}>
                         No pending phone orders.
                     </div>
                 ) : (
-                    <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
                         {phoneOrders.map(order => (
                             <React.Fragment key={order.id}>
                                 <div style={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    padding: '16px',
-                                    borderBottom: '1px solid var(--panel-border)',
-                                    background: 'rgba(27, 38, 59, 0.5)',
-                                    marginBottom: '8px',
-                                    borderRadius: '8px'
+                                    padding: '20px',
+                                    background: '#1e293b', // Dark slate for maximum contrast
+                                    marginBottom: '16px',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
                                 }}>
-                                    <div>
-                                        <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--text-main)' }}>{order.customerName}</div>
-                                        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>
+                                    {/* Left Side: Info & Details */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                                        <div style={{ fontWeight: '800', fontSize: '1.4rem', color: '#ffffff', marginBottom: '4px' }}>
+                                            {order.customerName}
+                                        </div>
+                                        <div style={{ color: '#94a3b8', fontSize: '1rem', marginBottom: '8px', fontWeight: '500' }}>
                                             #{order.id} • {new Date(order.time).toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                         <button
                                             onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
                                             style={{
-                                                background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer',
-                                                padding: 0, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '4px'
+                                                background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer',
+                                                padding: 0, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '6px',
+                                                fontWeight: '600'
                                             }}
                                         >
-                                            {expandedOrderId === order.id ? '▼ Hide Details' : '▶ View Details'}
+                                            <span style={{ fontSize: '0.8rem' }}>{expandedOrderId === order.id ? '▼' : '▶'}</span> {expandedOrderId === order.id ? 'Hide Details' : 'View Details'}
                                         </button>
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
-                                        <div style={{ fontWeight: '800', fontSize: '1.3rem', color: '#a3b18a' }}>
+
+                                    {/* Right Side: Price & Actions */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                                        <div style={{ fontWeight: '900', fontSize: '1.8rem', color: '#a3e635', marginBottom: '16px', textShadow: '0px 1px 3px rgba(0,0,0,0.5)' }}>
                                             ${order.total.toFixed(2)}
                                         </div>
                                         <div style={{ display: 'flex', gap: '8px' }}>
                                             <button
-                                                style={{ padding: '8px 12px', fontSize: '1rem', background: 'var(--color-specials)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                                style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                                                 onClick={() => triggerKitchenPrint(order)}
                                                 title="Reprint Kitchen Docket"
                                             >
                                                 🖨️
                                             </button>
                                             <button
-                                                style={{ padding: '8px 12px', fontSize: '1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                                style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                                                 onClick={() => onPrintReceipt && onPrintReceipt(order)}
                                                 title="Print Customer Receipt"
                                             >
@@ -86,14 +93,14 @@ export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
                                             </button>
                                             <button
                                                 className="pay-btn"
-                                                style={{ padding: '8px 16px', fontSize: '0.9rem', width: 'auto', background: '#27ae60' }}
+                                                style={{ padding: '0 16px', height: '42px', fontSize: '1.1rem', fontWeight: 'bold', background: '#22c55e', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                                                 onClick={() => { setPayingOrder(order); setPayingMethod('cash'); }}
                                             >
                                                 💵 Cash
                                             </button>
                                             <button
                                                 className="pay-btn"
-                                                style={{ padding: '8px 16px', fontSize: '0.9rem', width: 'auto' }}
+                                                style={{ padding: '0 16px', height: '42px', fontSize: '1.1rem', fontWeight: 'bold', background: '#22c55e', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                                                 onClick={() => { setPayingOrder(order); setPayingMethod('eftpos'); }}
                                             >
                                                 💳 Card
@@ -105,19 +112,21 @@ export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
                                 {/* Expandable Order Details */}
                                 {expandedOrderId === order.id && (
                                     <div style={{
-                                        margin: '-8px 0 12px 0', padding: '16px',
-                                        background: 'rgba(20, 28, 45, 0.4)', borderRadius: '0 0 8px 8px',
-                                        border: '1px solid var(--panel-border)', borderTop: 'none'
+                                        margin: '-20px 0 16px 0', padding: '24px 20px 16px 20px',
+                                        background: '#f8fafc', borderRadius: '0 0 12px 12px',
+                                        border: '1px solid #e2e8f0', borderTop: 'none',
+                                        boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)',
+                                        color: '#334155'
                                     }}>
-                                        <div style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>
+                                        <div style={{ fontSize: '1rem' }}>
                                             {order.items.map((item, idx) => (
-                                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                                                     <div>
-                                                        <span style={{ fontWeight: 'bold', marginRight: '8px' }}>{item.qty}x</span>
-                                                        <span>{item.name}</span>
-                                                        {item.modifier && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}> ({item.modifier.name})</span>}
+                                                        <span style={{ fontWeight: 'bold', marginRight: '8px', color: '#0f172a' }}>{item.qty}x</span>
+                                                        <span style={{ fontWeight: '500' }}>{item.name}</span>
+                                                        {item.modifier && <span style={{ color: '#64748b', fontSize: '0.9rem' }}> ({item.modifier.name})</span>}
                                                     </div>
-                                                    <span>${item.price.toFixed(2)}</span>
+                                                    <span style={{ fontWeight: '600', color: '#0f172a' }}>${item.price.toFixed(2)}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -128,8 +137,17 @@ export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
                     </div>
                 )}
 
-                <div className="modal-actions" style={{ marginTop: '24px' }}>
-                    <button className="btn-secondary" onClick={onClose}>Close</button>
+                <div className="modal-actions" style={{ marginTop: '32px' }}>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            width: '100%', padding: '16px', fontSize: '1.3rem', fontWeight: 'bold',
+                            background: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1',
+                            borderRadius: '12px', cursor: 'pointer'
+                        }}
+                    >
+                        Close
+                    </button>
                 </div>
             </div>
 

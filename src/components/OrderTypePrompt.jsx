@@ -12,7 +12,7 @@ export default function OrderTypePrompt() {
     };
 
     return (
-        <div className="modal-overlay" style={{ background: 'rgba(241, 245, 249, 0.95)', backdropFilter: 'blur(10px)', zIndex: 9999 }}>
+        <div className="modal-overlay" style={{ background: 'rgba(241, 245, 249, 0.98)', zIndex: 9999 }}>
             <div style={{
                 textAlign: 'center',
                 padding: '60px',

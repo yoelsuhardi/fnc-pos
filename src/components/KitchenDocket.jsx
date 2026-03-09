@@ -20,13 +20,12 @@ export default function KitchenDocket() {
 
     useEffect(() => {
         if (latestPrintedOrder) {
-            // Preview mode needs a longer delay: the system dialog captures the DOM
-            // synchronously, so React must finish painting before we open it.
-            // Silent mode (Electron queue) works fine at 500ms.
-            const delay = isPreviewEnabled ? 900 : 500;
+            // When printing silently (no dialog) via Electron IPC, we MUST give React enough time to 
+            // construct the physical DOM. Otherwise, webContents.print() captures a completely blank frame.
+            const timeoutMs = isPreviewEnabled ? 900 : 2000;
             const timer = setTimeout(() => {
                 triggerPrint(isPreviewEnabled, selectedPrinter);
-            }, delay);
+            }, timeoutMs);
             return () => clearTimeout(timer);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
