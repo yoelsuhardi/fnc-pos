@@ -102,6 +102,6 @@ export async function validateLicense(licenseKey, rawPublicKeyPem) {
 
     } catch (err) {
         console.error('License validation exception:', err);
-        return { valid: false, reason: 'Sandi kriptografi lisensi rusak atau tidak dikenal sistem.' };
+        return { valid: false, reason: `Sandi kriptografi lisensi rusak: ${err.message}` };
     }
 }
