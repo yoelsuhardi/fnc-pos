@@ -71,17 +71,13 @@ ipcMain.on('silent-print', (event, payload) => {
 
     const printOptions = {
         silent: !isPreview,
-        printBackground: true,
-        margins: { marginType: 'none' }
+        printBackground: true
     };
 
     if (!isPreview) {
-        printOptions.landscape = false;
-        printOptions.scaleFactor = 100;
-        printOptions.pagesPerSheet = 1;
-        printOptions.collate = false;
-        printOptions.copies = 1;
-
+        // Generic 80mm generic drivers often break if scaleFactor or explicit pagesPerSheet is forced.
+        // We only enforce zero-margins on the actual print queue, not the preview dialog.
+        printOptions.margins = { marginType: 'none' };
         if (printerName) printOptions.deviceName = printerName;
     }
 

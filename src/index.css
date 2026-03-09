@@ -453,8 +453,7 @@ body {
 /* Print Styles */
 @media print {
   @page {
-    size: 76mm auto;
-    /* explicitly configure print layout size to trigger thermal roll settings in Chrome */
+    /* Rely purely on the generic thermal driver for page sizing */
     margin: 0;
   }
 
@@ -481,7 +480,8 @@ body {
   }
 
   body:not(.printing-invoice) .kitchen-docket {
-    width: 68mm;
+    width: 100%;
+    max-width: 100%;
     padding: 0 4mm 2mm 4mm;
     margin: 0;
     background: white;
@@ -544,7 +544,8 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    width: 76mm;
+    width: 100%;
+    max-width: 100%;
     padding: 2mm;
     background: white;
     color: black;
