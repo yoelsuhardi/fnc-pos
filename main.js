@@ -34,8 +34,13 @@ function createWindow() {
 // ─── Silent Print IPC handler ─────────────────────────────────────────────────
 // Called from KitchenDocket.jsx via ipcRenderer.send('silent-print')
 ipcMain.on('silent-print', (event, options = {}) => {
+    console.log('[IPC Received] silent-print triggered with options:', options);
+
     const win = BrowserWindow.fromWebContents(event.sender);
-    if (!win) return;
+    if (!win) {
+        console.error('[IPC Error] silent-print: Cannot find BrowserWindow from sender.');
+        return;
+    }
 
     const printerName = options.printerName || '';
 

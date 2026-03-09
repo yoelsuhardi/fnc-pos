@@ -4,13 +4,25 @@ import EftposModal from './EftposModal';
 import CashTenderModal from './CashTenderModal';
 
 export default function PaymentQueueModal({ onClose, onPrintReceipt }) {
-    const { phoneOrders, payPhoneOrder, triggerKitchenPrint } = usePos();
+    const { phoneOrders, payPhoneOrder, triggerKitchenPrint, selectedPrinter } = usePos();
     const [payingOrder, setPayingOrder] = useState(null);
     const [payingMethod, setPayingMethod] = useState(null); // 'eftpos' or 'cash'
     const [expandedOrderId, setExpandedOrderId] = useState(null);
 
+    const triggerDrawerKick = () => {
+        if (typeof window !== 'undefined' && window.process?.type === 'renderer') {
+            const { ipcRenderer } = window.require('electron');
+            // Sending a print job while POS UI is hidden by @media print creates a blank 1mm slip.
+            // This is the universal standard way to trigger the RJ11 Cash Drawer via ESC/POS drivers.
+            ipcRenderer.send('silent-print', { isPreview: false, printerName: selectedPrinter });
+        }
+    };
+
     const handleSuccess = (method) => {
         payPhoneOrder(payingOrder.id, method);
+        if (method === 'cash') {
+            triggerDrawerKick();
+        }
         setPayingOrder(null);
         setPayingMethod(null);
     };
