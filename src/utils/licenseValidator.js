@@ -19,7 +19,7 @@ LwIDAQAB
  * @param {string} rawPublicKeyPem 
  * @returns {Promise<{valid: boolean, reason?: string, payload?: object}>}
  */
-export async function validateLicense(licenseKey, rawPublicKeyPem) {
+export async function validateLicense(licenseKey, rawPublicKeyPem = PUBLIC_KEY_PEM) {
     if (!licenseKey || typeof licenseKey !== 'string') {
         return { valid: false, reason: 'Kunci lisensi kosong atau format salah.' };
     }
